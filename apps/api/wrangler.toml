@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 ENVIRONMENT = "demo"
-ALLOWED_ORIGINS = "https://hmoham404.github.io,https://maxfit-gym.pages.dev"
+ALLOWED_ORIGINS = "https://maxfit-web.foot-arena-pro.workers.dev,https://maxfit-gym.foot-arena-pro.workers.dev,https://maxfit-gym.pages.dev,https://hmoham404.github.io"
 
 [[d1_databases]]
 binding = "DB"

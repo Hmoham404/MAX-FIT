@@ -5,14 +5,14 @@
 
 | | |
 |---|---|
-| Site public | https://hmoham404.github.io/MAX-FIT/ |
-| BackOffice | https://hmoham404.github.io/MAX-FIT/admin |
+| Site public | https://maxfit-web.foot-arena-pro.workers.dev |
+| BackOffice | https://maxfit-web.foot-arena-pro.workers.dev/admin |
 | API | https://maxfit-api.foot-arena-pro.workers.dev |
 
 ## Architecture
 
 ```
-GitHub Pages (React SPA, PWA)  ──HTTPS + Bearer token──▶  Cloudflare Worker (Hono API)  ──▶  Cloudflare D1 (SQLite)
+Cloudflare (Pages/Workers static assets — React SPA, PWA)  ──HTTPS + Bearer token──▶  Cloudflare Worker (Hono API)  ──▶  Cloudflare D1 (SQLite)
 ```
 
 - **apps/web** — React 18 + Vite + TypeScript + Tailwind, Framer Motion, Lucide, Recharts, TanStack Query, jsPDF/AutoTable, ExcelJS, PWA (vite-plugin-pwa). Site public (FR / EN / AR-RTL, mode jour/nuit avec logo adapté) + BackOffice `/admin`.
@@ -22,7 +22,7 @@ GitHub Pages (React SPA, PWA)  ──HTTPS + Bearer token──▶  Cloudflare W
 - **tests** — tests fonctionnels et de sécurité contre l’API.
 - **docs** — documentation technique, sécurité, sauvegarde/restauration, guide utilisateur.
 
-Pourquoi un token Bearer et pas un cookie ? Le site (github.io) et l’API (workers.dev) sont sur deux domaines différents : les navigateurs (Safari, Chrome) bloquent les cookies tiers. Le token de session est opaque (256 bits), stocké haché (SHA-256) en base, expire après 12 h, est révocable, et conservé en `sessionStorage` (effacé à la fermeture du navigateur). Pas de cookie ⇒ pas de CSRF. Si vous servez un jour le site et l’API sous le même domaine (domaine personnalisé), le passage à des cookies HttpOnly/SameSite=Strict est simple (voir docs/SECURITY.md).
+Pourquoi un token Bearer et pas un cookie ? Le site (maxfit-web) et l’API (maxfit-api) sont sur deux sous-domaines distincts : les navigateurs (Safari, Chrome) bloquent les cookies tiers. Le token de session est opaque (256 bits), stocké haché (SHA-256) en base, expire après 12 h, est révocable, et conservé en `sessionStorage` (effacé à la fermeture du navigateur). Pas de cookie ⇒ pas de CSRF. Si vous servez un jour le site et l’API sous le même domaine (domaine personnalisé), le passage à des cookies HttpOnly/SameSite=Strict est simple (voir docs/SECURITY.md).
 
 ## Connexion au BackOffice
 
@@ -56,7 +56,7 @@ openssl rand -hex 32 | npx wrangler secret put CODE_PEPPER   (dans apps/api)
 openssl rand -hex 24 | npx wrangler secret put BOOTSTRAP_TOKEN
 npm run deploy:api
 curl -X POST https://<worker>/api/auth/bootstrap -H 'Content-Type: application/json' -d '{"token":"<BOOTSTRAP_TOKEN>","name":"Super Admin"}'
-git push origin main                                  # GitHub Actions construit et publie le site sur GitHub Pages
+cd apps/web && VITE_API_URL=https://<worker> npm run deploy   # site sur Cloudflare
 ```
 
 ## Tests
