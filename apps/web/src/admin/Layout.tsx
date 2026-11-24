@@ -137,7 +137,7 @@ export default function AdminLayout() {
       </AnimatePresence>
       <div className="flex min-w-0 flex-1 flex-col">
         {!online && <div className="flex items-center justify-center gap-2 bg-amber-500 px-4 py-2 text-sm font-bold text-ink"><WifiOff className="h-4 w-4" />{t('adm.offline')}</div>}
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-zinc-200 bg-white/80 px-4 backdrop-blur-xl dark:border-white/10 dark:bg-ink/80 sm:px-6">
+        <header className="sticky top-0 z-30 box-content flex h-16 items-center pt-[env(safe-area-inset-top)] gap-3 border-b border-zinc-200 bg-white/80 px-4 backdrop-blur-xl dark:border-white/10 dark:bg-ink/80 sm:px-6">
           <button className="lg:hidden" onClick={() => setMobile(true)} aria-label="menu"><Menu /></button>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-bold">{me.display_name}</div>
@@ -154,12 +154,20 @@ export default function AdminLayout() {
             </Link>
           )}
         </header>
-        <main className="mx-auto w-full max-w-[1600px] flex-1 p-4 sm:p-6">
+        <main className="mx-auto w-full max-w-[1600px] flex-1 p-3 pb-24 sm:p-6 lg:pb-6">
           <motion.div key={loc.pathname + loc.search} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             <Outlet />
           </motion.div>
         </main>
-        <footer className="px-6 py-4 text-center text-[11px] text-zinc-500">SMART GYM 360 — Designed &amp; Developed by GM LAC.</footer>
+        {/* Mobile bottom navigation (app-like) */}
+        <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-zinc-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl dark:border-white/10 dark:bg-ink/95 lg:hidden">
+          {([['/admin', LayoutDashboard, 'Accueil', 'dashboard:read'], ['/admin/clients', Users, 'Clients', 'clients:read'], ['/admin/subscriptions', CalendarClock, 'Abonn.', 'subscriptions:read'], can('cash:read') ? ['/admin/cash', Wallet, 'Caisse', 'cash:read'] : ['/admin/planning', CalendarDays, 'Planning', 'schedules:read']] as [string, any, string, string][])
+            .filter(([, , , p]) => can(p)).map(([to, I, label]) => (
+              <Link key={to} to={to} className={cx('flex flex-col items-center gap-0.5 py-2 text-[10px] font-semibold', isActive(to) ? 'text-brand' : 'text-zinc-500')}><I className="h-5 w-5" />{label}</Link>
+            ))}
+          <button onClick={() => setMobile(true)} className="flex flex-col items-center gap-0.5 py-2 text-[10px] font-semibold text-zinc-500"><Menu className="h-5 w-5" />Menu</button>
+        </nav>
+        <footer className="px-6 py-4 pb-24 lg:pb-4 text-center text-[11px] text-zinc-500">SMART GYM 360 — Designed &amp; Developed by GM LAC.</footer>
       </div>
     </div>
   );

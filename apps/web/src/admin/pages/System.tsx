@@ -209,7 +209,7 @@ export function UsersPage() {
 export function SettingsPage() {
   const { can } = useAuth();
   const { toast } = useUI();
-  const [tab, setTab] = useState<'company' | 'expcat' | 'audit'>('company');
+  const [tab, setTab] = useState<'company' | 'expcat' | 'audit' | 'db'>('company');
   const { data, refetch } = useQuery({ queryKey: ['company'], queryFn: () => api('/settings/company') });
   const [f, setF] = useState<any>(null);
   useEffect(() => { if (data) setF(data); }, [data]);
@@ -219,7 +219,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-4xl uppercase tracking-wide">Paramètres</h1>
-      <Tabs value={tab} onChange={setTab} items={[{ value: 'company', label: 'Entreprise & documents' }, { value: 'expcat', label: 'Catégories de dépenses' }, ...(can('audit:read') ? [{ value: 'audit' as const, label: 'Journal d’audit' }] : [])]} />
+      <Tabs value={tab} onChange={setTab} items={[{ value: 'company', label: 'Entreprise & documents' }, { value: 'expcat', label: 'Catégories de dépenses' }, { value: 'db', label: 'Base de données' }, ...(can('audit:read') ? [{ value: 'audit' as const, label: 'Journal d’audit' }] : [])]} />
       {tab === 'company' && f && (
         <Card>
           <fieldset disabled={!can('settings:write')} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -229,11 +229,71 @@ export function SettingsPage() {
           {can('settings:write') && <Button className="mt-4" onClick={async () => { try { await api('/settings/company', { method: 'PUT', body: f }); resetCompanyCache(); toast('success', 'Paramètres enregistrés'); refetch(); } catch (e: any) { toast('error', e.message); } }}><Save className="h-4 w-4" />Enregistrer</Button>}
         </Card>
       )}
+      {tab === 'db' && <DatabasePanel />}
       {tab === 'expcat' && <Resource title="Catégories de dépenses" endpoint="/expense-categories" module="expenses" deletable columns={[{ key: 'code', label: 'Code', className: 'font-mono text-xs' }, { key: 'name', label: 'Nom' }]} fields={[{ name: 'code', label: 'Code', required: true }, { name: 'name', label: 'Nom', required: true }]} />}
       {tab === 'audit' && <DataTable title="Journal d'audit" rows={audit.data?.data ?? []} total={audit.data?.total} page={auditPage} pageSize={50} onPage={setAuditPage} loading={audit.isLoading} columns={[
         { key: 'created_at', label: 'Date', render: (r) => fmtDateTime(r.created_at) }, { key: 'user_name', label: 'Utilisateur' }, { key: 'action', label: 'Action', render: (r) => <Badge tone={r.action.includes('fail') ? 'red' : 'zinc'}>{r.action}</Badge>, exportValue: (r) => r.action },
         { key: 'entity', label: 'Entité' }, { key: 'entity_id', label: 'ID' }, { key: 'details', label: 'Détails', render: (r) => <span className="line-clamp-1 max-w-md font-mono text-xs">{r.details}</span> }, { key: 'ip', label: 'IP', hideOnMobile: true },
       ]} />}
+    </div>
+  );
+}
+
+// ======================= DATABASE =======================
+function DatabasePanel() {
+  const { me } = useAuth();
+  const { toast } = useUI();
+  const qc = useQueryClient();
+  const { data, refetch, isLoading } = useQuery({ queryKey: ['db-usage'], queryFn: () => api('/settings/database') });
+  const [f, setF] = useState({ code: '', confirm: '', include_catalog: false });
+  const [busy, setBusy] = useState(false);
+  const mb = (b: number) => (b / 1024 / 1024).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' Mo';
+  if (isLoading || !data) return <Spinner />;
+  const pct = Math.max(0.5, (data.size_bytes / data.limit_bytes) * 100);
+  const perClient = 6 * 1024; // ~6 Ko par client actif / an (abonnements, paiements, reçus, entrées)
+  const reset = async () => {
+    setBusy(true);
+    try {
+      await api('/settings/database/reset', { body: f });
+      toast('success', 'Base vidée : vous pouvez commencer avec vos vraies données');
+      setF({ code: '', confirm: '', include_catalog: false });
+      qc.invalidateQueries(); refetch();
+    } catch (e: any) { toast('error', e.message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Card className="space-y-4">
+        <h3 className="font-bold">Capacité de la base (Cloudflare D1)</h3>
+        <div>
+          <div className="mb-1 flex justify-between text-sm"><span>Utilisé : <b>{mb(data.size_bytes)}</b></span><span>Maximum : <b>{mb(data.limit_bytes)}</b></span></div>
+          <div className="h-3 overflow-hidden rounded-full bg-zinc-200 dark:bg-white/10"><div className="h-full rounded-full bg-brand" style={{ width: pct + '%' }} /></div>
+          <p className="mt-1 text-xs text-zinc-500">{((data.size_bytes / data.limit_bytes) * 100).toFixed(2)} % utilisé — dont médias importés : {mb(data.media_bytes)}</p>
+        </div>
+        <ul className="space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
+          <li>• Taille max de la base : <b>500 Mo</b> (offre gratuite) — <b>10 Go</b> avec Cloudflare Workers Paid (5 $/mois).</li>
+          <li>• Taille max d’un fichier importé (photo, logo, PDF) : <b>{mb(data.max_upload_bytes)}</b>.</li>
+          <li>• Estimation : ≈ <b>{Math.floor(data.limit_bytes / perClient).toLocaleString('fr-FR')}</b> clients-années d’historique complet dans 500 Mo.</li>
+          <li>• Aucune limite sur le nombre de clients, employés, abonnements ou factures : seule la taille totale compte.</li>
+        </ul>
+      </Card>
+      <Card>
+        <h3 className="mb-3 font-bold">Contenu actuel</h3>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">{data.tables.map((t: any) => <div key={t.table} className="flex justify-between border-b border-zinc-100 py-1 dark:border-white/5"><span className="text-zinc-500">{t.label}</span><b className="tabular-nums">{t.rows.toLocaleString('fr-FR')}</b></div>)}</div>
+      </Card>
+      {me.role === 'super_admin' && (
+        <Card className="border-red-300 lg:col-span-2 dark:border-red-500/40">
+          <h3 className="flex items-center gap-2 font-bold text-red-600"><Trash2 className="h-5 w-5" />Vider la base pour commencer le travail</h3>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Supprime <b>toutes les données d’activité</b> (données de démonstration comprises) : clients, abonnements, paiements, reçus, caisse, devis, factures, employés, coachs, pointages, paie, planning, dépenses, fournisseurs, équipements, notifications et journal.<br />
+          <b>Conservés :</b> comptes utilisateurs et codes d’accès, paramètres de l’entreprise, textes / logo / couleurs du site, catégories, salles, règles de paie.</p>
+          <p className="mt-2 text-xs text-zinc-500">Filet de sécurité : Cloudflare D1 Time Travel permet de restaurer la base à un instant antérieur (7 jours en offre gratuite) — voir docs/BACKUP_RESTORE.md.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <Field label="Votre code d’accès"><Input type="password" value={f.code} onChange={(e) => setF({ ...f, code: e.target.value })} /></Field>
+            <Field label="Tapez SUPPRIMER pour confirmer"><Input value={f.confirm} onChange={(e) => setF({ ...f, confirm: e.target.value })} placeholder="SUPPRIMER" /></Field>
+            <Field label="Supprimer aussi le catalogue" hint="Activités, formules & tarifs, promotions, galerie"><label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5 accent-brand" checked={f.include_catalog} onChange={(e) => setF({ ...f, include_catalog: e.target.checked })} />Oui</label></Field>
+          </div>
+          <Button variant="danger" className="mt-4" loading={busy} disabled={f.confirm !== 'SUPPRIMER' || f.code.length < 6} onClick={reset}><Trash2 className="h-4 w-4" />Vider définitivement la base</Button>
+        </Card>
+      )}
     </div>
   );
 }

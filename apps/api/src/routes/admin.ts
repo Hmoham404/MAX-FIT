@@ -419,6 +419,64 @@ settings.post('/website/discard', async (c) => {
   return c.json({ ok: true });
 });
 
+// ---------- Database usage & reset ----------
+const DB_LIMIT_BYTES = 500 * 1024 * 1024; // Cloudflare D1 free plan: 500 MB per database (10 GB on Workers Paid)
+const COUNT_TABLES: [string, string][] = [
+  ['clients', 'Clients'], ['subscriptions', 'Abonnements'], ['payments', 'Paiements'], ['receipts', 'Reçus'], ['attendance', 'Entrées clients'],
+  ['employees', 'Employés'], ['schedules', 'Séances planning'], ['employee_attendance', 'Pointages'], ['payroll_records', 'Bulletins de paie'],
+  ['expenses', 'Dépenses'], ['invoices', 'Factures'], ['quotations', 'Devis'], ['suppliers', 'Fournisseurs'], ['equipment', 'Équipements'],
+  ['activities', 'Activités'], ['subscription_plans', 'Formules'], ['website_media', 'Médias / documents'], ['audit_logs', 'Journal d’audit'],
+];
+settings.get('/database', async (c) => {
+  assertPerm(c.get('user'), 'settings:read');
+  const q = await c.env.DB.prepare('SELECT 1').run();
+  const size = Number((q.meta as any).size_after ?? 0);
+  const counts = await c.env.DB.batch(COUNT_TABLES.map(([t]) => c.env.DB.prepare(`SELECT COUNT(*) AS n FROM ${t}`)));
+  const media = await c.env.DB.prepare('SELECT COALESCE(SUM(LENGTH(data)),0) AS b FROM website_media').first<{ b: number }>();
+  return c.json({
+    size_bytes: size,
+    limit_bytes: DB_LIMIT_BYTES,
+    media_bytes: media?.b ?? 0,
+    max_upload_bytes: 1_500_000,
+    tables: COUNT_TABLES.map(([t, label], i) => ({ table: t, label, rows: (counts[i].results[0] as any).n })),
+  });
+});
+
+/**
+ * Wipes business data to start real work on an empty base. SUPER ADMIN only, requires the caller's own access code
+ * and the word SUPPRIMER. Keeps: users & roles, settings, website texts, categories, rooms, payroll rules.
+ * Cloudflare D1 Time Travel can restore the database to a point before the wipe (see docs/BACKUP_RESTORE.md).
+ */
+settings.post('/database/reset', async (c) => {
+  const u = c.get('user');
+  if (u.role !== 'super_admin') throw new HttpError(403, 'Réservé au Super Admin');
+  const b = z.object({ code: z.string().min(6), confirm: z.literal('SUPPRIMER'), include_catalog: z.boolean().optional() }).parse(await c.req.json());
+  const ok = await c.env.DB.prepare('SELECT 1 FROM users WHERE id = ? AND code_lookup = ?').bind(u.id, await hashCode(b.code.toUpperCase(), c.env.CODE_PEPPER)).first();
+  if (!ok) {
+    await audit(c, 'database_reset_denied', 'database');
+    throw new HttpError(403, 'Code d’accès incorrect');
+  }
+  const t = [
+    'attendance', 'subscription_payments', 'cash_transactions', 'cash_closures', 'receipts', 'payments', 'cash_registers',
+    'subscription_history', 'subscriptions', 'guardians', 'clients', 'invoice_items', 'invoices', 'quotation_items', 'quotations',
+    'payroll_items', 'payroll_records', 'payroll_periods', 'salary_advances', 'employee_attendance', 'leaves', 'expenses', 'purchases',
+    'maintenance_records', 'equipment', 'suppliers', 'schedules', 'schedule_exceptions', 'employee_documents', 'employee_contracts', 'coaches',
+  ];
+  const stmts = t.map((x) => c.env.DB.prepare(`DELETE FROM ${x}`));
+  stmts.push(c.env.DB.prepare('UPDATE users SET employee_id = NULL'));
+  stmts.push(c.env.DB.prepare('DELETE FROM employees'));
+  if (b.include_catalog) {
+    stmts.push(c.env.DB.prepare('DELETE FROM promotions'), c.env.DB.prepare('DELETE FROM subscription_plans'), c.env.DB.prepare('DELETE FROM activities'),
+      c.env.DB.prepare("DELETE FROM website_media WHERE kind IN ('gallery','document','other')"));
+  }
+  stmts.push(c.env.DB.prepare('DELETE FROM notifications'), c.env.DB.prepare('DELETE FROM login_attempts'), c.env.DB.prepare('DELETE FROM document_counters'),
+    c.env.DB.prepare('DELETE FROM audit_logs'),
+    c.env.DB.prepare("UPDATE user_sessions SET revoked_at = datetime('now') WHERE id != ? AND revoked_at IS NULL").bind(u.session_id));
+  await c.env.DB.batch(stmts);
+  await audit(c, 'database_reset', 'database', null, { include_catalog: !!b.include_catalog, at: nowISO() });
+  return c.json({ ok: true });
+});
+
 /** Upload a file (image/pdf) stored in D1 (≤ 1.5 MB). For larger files, configure R2 (see docs). */
 settings.post('/media/upload', async (c) => {
   assertPerm(c.get('user'), 'website:write');

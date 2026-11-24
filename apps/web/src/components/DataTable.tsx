@@ -66,7 +66,30 @@ export function DataTable({
         )}
       </div>
       {error ? <div className="p-4"><ErrorBox error={error} onRetry={onRetry} /></div> : (
-        <div className="scrollbar-thin overflow-x-auto">
+        <>
+        {/* Mobile mode: rows as cards */}
+        <div className="divide-y divide-zinc-100 md:hidden dark:divide-white/5">
+          {loading && Array.from({ length: 4 }).map((_, i) => <div key={i} className="space-y-2 p-4"><Skeleton className="h-4 w-2/3" /><Skeleton className="h-3 w-full" /></div>)}
+          {!loading && rows.map((r, i) => {
+            const [first, ...rest] = columns.filter((c) => c.key !== '_actions' && c.label);
+            return (
+              <div key={(r.id as any) ?? i} onClick={onRowClick ? () => onRowClick(r) : undefined} className={cx('p-4', onRowClick && 'active:bg-zinc-50 dark:active:bg-white/5')}>
+                {first && <div className="mb-2 font-semibold">{first.render ? first.render(r) : first.money ? money((r as any)[first.key]) : String((r as any)[first.key] ?? '—')}</div>}
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+                  {rest.map((c) => (
+                    <div key={c.key} className="min-w-0">
+                      <dt className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{c.label}</dt>
+                      <dd className="truncate">{c.render ? c.render(r) : c.money ? money((r as any)[c.key]) : String((r as any)[c.key] ?? '—')}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {actions && <div className="mt-3 flex flex-wrap justify-end gap-1 border-t border-zinc-100 pt-2 dark:border-white/5" onClick={(e) => e.stopPropagation()}>{actions(r)}</div>}
+              </div>
+            );
+          })}
+          {!loading && rows.length === 0 && <Empty />}
+        </div>
+        <div className="scrollbar-thin hidden overflow-x-auto md:block">
           <table className="w-full text-sm">
             <thead className="bg-zinc-50 text-start text-xs uppercase tracking-wide text-zinc-500 dark:bg-white/[0.03]">
               <tr>
@@ -101,6 +124,7 @@ export function DataTable({
           </table>
           {!loading && rows.length === 0 && <Empty />}
         </div>
+        </>
       )}
       {onPage && (total ?? 0) > pageSize && (
         <div className="flex items-center justify-between border-t border-zinc-200 px-4 py-3 text-sm dark:border-white/10">
