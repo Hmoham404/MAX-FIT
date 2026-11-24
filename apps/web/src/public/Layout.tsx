@@ -35,13 +35,36 @@ export function useBrandColor(site: any) {
   useEffect(() => applyBrandColor(site?.site?.colors?.primary), [site?.site?.colors?.primary]);
 }
 
+const FLAG_LABEL: Record<Lang, string> = { fr: 'Français', en: 'English', ar: 'العربية (تونس)' };
+/** Round SVG flags (emoji flags don't render on Windows): France, United Kingdom, Tunisia. */
+function Flag({ lang }: { lang: Lang }) {
+  if (lang === 'fr')
+    return <svg viewBox="0 0 30 30" className="h-full w-full"><rect width="10" height="30" fill="#002395" /><rect x="10" width="10" height="30" fill="#fff" /><rect x="20" width="10" height="30" fill="#ED2939" /></svg>;
+  if (lang === 'en')
+    return (
+      <svg viewBox="0 0 60 60" className="h-full w-full" preserveAspectRatio="xMidYMid slice">
+        <clipPath id="uk"><rect width="60" height="60" /></clipPath>
+        <g clipPath="url(#uk)"><rect width="60" height="60" fill="#012169" /><path d="M0 0l60 60M60 0L0 60" stroke="#fff" strokeWidth="12" /><path d="M0 0l60 60M60 0L0 60" stroke="#C8102E" strokeWidth="5" />
+          <path d="M30 0v60M0 30h60" stroke="#fff" strokeWidth="18" /><path d="M30 0v60M0 30h60" stroke="#C8102E" strokeWidth="10" /></g>
+      </svg>
+    );
+  return (
+    <svg viewBox="0 0 30 30" className="h-full w-full">
+      <rect width="30" height="30" fill="#E70013" /><circle cx="15" cy="15" r="7.5" fill="#fff" />
+      <circle cx="15" cy="15" r="5.6" fill="#E70013" /><circle cx="16.4" cy="15" r="4.5" fill="#fff" />
+      <polygon fill="#E70013" points={Array.from({ length: 10 }, (_, i) => { const a = (Math.PI / 5) * i; const r = i % 2 ? 1.25 : 3.1; return `${17 + r * Math.cos(a)},${15 + r * Math.sin(a)}`; }).join(' ')} />
+    </svg>
+  );
+}
+
 export function LangSwitch({ className }: { className?: string }) {
   const { lang, setLang } = usePrefs();
   return (
-    <div className={cx('flex items-center rounded-full border border-current/20 p-0.5 text-xs font-bold', className)}>
+    <div className={cx('flex items-center gap-1 rounded-full border border-current/20 p-1', className)}>
       {(['fr', 'en', 'ar'] as Lang[]).map((l) => (
-        <button key={l} onClick={() => setLang(l)} className={cx('rounded-full px-2.5 py-1 uppercase transition', lang === l ? 'bg-brand text-brand-fg' : 'opacity-70 hover:opacity-100')} aria-label={l}>
-          {l === 'ar' ? 'ع' : l}
+        <button key={l} onClick={() => setLang(l)} title={FLAG_LABEL[l]} aria-label={FLAG_LABEL[l]}
+          className={cx('grid h-7 w-7 place-items-center overflow-hidden rounded-full transition', lang === l ? 'scale-110 ring-2 ring-brand ring-offset-1 ring-offset-transparent' : 'opacity-60 grayscale-[40%] hover:opacity-100 hover:grayscale-0')}>
+          <Flag lang={l} />
         </button>
       ))}
     </div>
