@@ -6,7 +6,9 @@ import path from 'node:path';
 import { cloudflare } from "@cloudflare/vite-plugin";
 
 // BASE is "/MAX-FIT/" on GitHub Pages, "/" elsewhere (Cloudflare Pages, custom domain).
-const base = process.env.BASE_PATH || '/';
+// Guard: Git Bash on Windows rewrites "/" into "C:/Program Files/Git/" — only accept real URL paths.
+const rawBase = process.env.BASE_PATH || '/';
+const base = /^\/[A-Za-z0-9_\-/]*$/.test(rawBase) ? (rawBase.endsWith('/') ? rawBase : rawBase + '/') : '/';
 
 export default defineConfig({
   base,

@@ -96,7 +96,7 @@ export default function PublicLayout() {
           <Link to="/" className="shrink-0"><Logo site={site?.site} forceTheme={transparent ? 'dark' : undefined} /></Link>
           <nav className="ms-6 hidden flex-1 items-center gap-1 xl:flex">
             {links.map(([to, k]) => (
-              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => cx('relative rounded-full px-3 py-2 text-sm font-semibold uppercase tracking-wide transition hover:text-brand', isActive && 'text-brand')}>
+              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => cx('relative whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] font-semibold uppercase tracking-wide transition hover:text-brand', isActive && 'text-brand')}>
                 {t(k)}
               </NavLink>
             ))}
