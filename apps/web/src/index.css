@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --brand: 190 242 100; }
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-zinc-900 antialiased dark:bg-ink dark:text-zinc-100; font-feature-settings: "cv11", "ss01"; }
+[dir="rtl"] body { font-family: "Noto Sans Arabic", Inter, system-ui, sans-serif; }
+[dir="rtl"] .font-display { font-family: "Noto Sans Arabic", "Bebas Neue", sans-serif; font-weight: 700; letter-spacing: 0; }
+::selection { background: rgb(var(--brand)); color: #0B0D10; }
+.text-stroke { -webkit-text-stroke: 1.5px currentColor; color: transparent; }
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(127,127,127,.35); border-radius: 9999px; }
+.grain:before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
