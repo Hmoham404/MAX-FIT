@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: 'rgb(var(--brand) / <alpha-value>)',
+        brand: { DEFAULT: 'rgb(var(--brand) / <alpha-value>)', fg: 'rgb(var(--brand-fg) / <alpha-value>)' },
         ink: '#0B0D10',
         anthracite: '#171A20',
         smoke: '#F3F4F6',

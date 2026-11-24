@@ -59,7 +59,7 @@ export function ActivitiesAdminPage() {
       { name: 'name', label: 'Nom (FR)', required: true }, { name: 'name_en', label: 'Nom (EN)' }, { name: 'name_ar', label: 'Nom (AR)' }, { name: 'category', label: 'Catégorie' }, { name: 'color', label: 'Couleur', type: 'color' }, { name: 'sort_order', label: 'Ordre', type: 'number' },
       { name: 'image_url', label: 'Image illustrative (URL)', type: 'image', span: 3 }, { name: 'description', label: 'Description (FR)', type: 'textarea', span: 3 }, { name: 'description_en', label: 'Description (EN)', type: 'textarea' }, { name: 'description_ar', label: 'Description (AR)', type: 'textarea' },
       { name: 'is_published', label: 'Publiée', type: 'bool' },
-    ]} defaults={{ is_published: true, color: '#BEF264' }} />;
+    ]} defaults={{ is_published: true, color: '#D3010C' }} />;
 }
 
 export function SuppliersPage() {
@@ -147,7 +147,7 @@ export function ReportsPage() {
     <div className="space-y-4">
       <h1 className="font-display text-4xl uppercase tracking-wide">Rapports</h1>
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        {(list.data ?? []).map((r: any) => <button key={r.key} onClick={() => setKey(r.key)} className={`rounded-xl border p-3 text-start text-sm font-semibold transition ${key === r.key ? 'border-brand bg-brand text-ink' : 'border-zinc-200 hover:border-brand dark:border-white/10'}`}>{r.title}</button>)}
+        {(list.data ?? []).map((r: any) => <button key={r.key} onClick={() => setKey(r.key)} className={`rounded-xl border p-3 text-start text-sm font-semibold transition ${key === r.key ? 'border-brand bg-brand text-brand-fg' : 'border-zinc-200 hover:border-brand dark:border-white/10'}`}>{r.title}</button>)}
       </div>
       {key && <>
         <Card className="flex flex-wrap items-center gap-2 p-3"><span className="font-bold">{rep.data?.title}</span><Input type="date" value={range.from} onChange={(e) => setRange({ ...range, from: e.target.value })} className="ms-auto h-9 w-auto" /><Input type="date" value={range.to} onChange={(e) => setRange({ ...range, to: e.target.value })} className="h-9 w-auto" />

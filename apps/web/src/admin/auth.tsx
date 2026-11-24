@@ -50,7 +50,7 @@ function Login({ onLogin }: { onLogin: (t: string) => void }) {
   return (
     <div className="grain relative grid min-h-screen place-items-center overflow-hidden bg-ink p-4 text-white">
       <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1800&q=60" alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
-      <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/90 to-lime-900/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-ink via-ink/90 to-brand/25" />
       <div className="absolute right-4 top-4 flex gap-2"><LangSwitch /><ThemeSwitch /></div>
       <motion.form onSubmit={submit} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="relative w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-2xl backdrop-blur-xl">
         <Link to="/"><Logo forceTheme="dark" /></Link>

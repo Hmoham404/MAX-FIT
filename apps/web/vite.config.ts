@@ -14,13 +14,13 @@ export default defineConfig({
   build: { chunkSizeWarningLimit: 1500 },
   plugins: [react(), VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.svg', 'icons/*.png'],
+    includeAssets: ['favicon.png', 'icons/*.png', 'brand/*.png'],
     manifest: {
       name: 'MAX FIT — SMART GYM 360',
       short_name: 'MAX FIT',
       description: 'MAX FIT — salle de sport & back office SMART GYM 360 by GM LAC',
-      theme_color: '#0B0D10',
-      background_color: '#0B0D10',
+      theme_color: '#121212',
+      background_color: '#121212',
       display: 'standalone',
       start_url: base + 'admin',
       scope: base,

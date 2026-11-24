@@ -126,7 +126,7 @@ export function PaymentsPage() {
         <h1 className="font-display text-4xl uppercase tracking-wide">Paiements</h1>
         {can('payments:write') && <Button onClick={() => setOpen(true)}><Plus className="h-4 w-4" />Autre recette</Button>}
       </div>
-      <Card className="flex flex-wrap items-center gap-4 p-4"><div>Total encaissé sur la période : <b className="text-xl text-lime-600 dark:text-brand">{money(data?.sum)}</b></div><div className="text-sm text-zinc-500">{data?.total ?? 0} paiement(s)</div></Card>
+      <Card className="flex flex-wrap items-center gap-4 p-4"><div>Total encaissé sur la période : <b className="text-xl text-brand">{money(data?.sum)}</b></div><div className="text-sm text-zinc-500">{data?.total ?? 0} paiement(s)</div></Card>
       <DataTable title="Paiements" rows={data?.data ?? []} total={data?.total} page={page} onPage={setPage} search={search} onSearch={setSearch} loading={isLoading} error={error} onRetry={refetch}
         fetchAll={async () => (await api('/payments', { query: { ...query, page: 1, pageSize: 500 } })).data}
         toolbar={<>
@@ -261,7 +261,7 @@ function DocEditor({ kind, open, onClose, doc }: { kind: 'quotation' | 'invoice'
         <Button size="sm" variant="outline" onClick={() => setF({ ...f, items: [...f.items, { designation: '', quantity: 1, unit_price: '', discount: 0 }] })}><Plus className="h-4 w-4" />Ligne</Button>
       </div>
       <Field label={kind === 'quotation' ? 'Conditions commerciales' : 'Notes'} className="mt-4"><Textarea value={kind === 'quotation' ? f.conditions ?? '' : f.notes ?? ''} onChange={(e) => setF({ ...f, [kind === 'quotation' ? 'conditions' : 'notes']: e.target.value })} /></Field>
-      <Card className="mt-4 flex flex-wrap justify-end gap-6 bg-zinc-50 text-sm dark:bg-white/5"><span>Total HT : <b>{money(ht)}</b></span><span>TVA : <b>{money(vat)}</b></span><span className="text-lg">Total TTC : <b className="text-lime-600 dark:text-brand">{money(ht + vat)}</b>{kind === 'invoice' && <span className="text-xs text-zinc-500"> (+ timbre selon paramètres)</span>}</span></Card>
+      <Card className="mt-4 flex flex-wrap justify-end gap-6 bg-zinc-50 text-sm dark:bg-white/5"><span>Total HT : <b>{money(ht)}</b></span><span>TVA : <b>{money(vat)}</b></span><span className="text-lg">Total TTC : <b className="text-brand">{money(ht + vat)}</b>{kind === 'invoice' && <span className="text-xs text-zinc-500"> (+ timbre selon paramètres)</span>}</span></Card>
     </Modal>
   );
 }

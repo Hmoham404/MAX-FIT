@@ -57,7 +57,7 @@ export function NewSubscriptionModal({ open, onClose, clientId, renewFrom }: { o
         <Field label="Date de début" hint={renewFrom ? 'Par défaut : lendemain de la fin actuelle' : 'Par défaut : aujourd’hui'}><Input type="date" value={f.start_date} onChange={(e) => setF({ ...f, start_date: e.target.value })} /></Field>
         <Field label="Promotion"><Select value={f.promotion_id} onChange={(e) => setF({ ...f, promotion_id: e.target.value })}><option value="">Aucune</option>{promos.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}</Select></Field>
         {can('plans:write') && <Field label="Réduction exceptionnelle (DT)"><Input type="number" step="0.001" min="0" value={f.extra_discount} onChange={(e) => setF({ ...f, extra_discount: e.target.value })} /></Field>}
-        <Field label="Frais d’inscription"><label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5 accent-lime-400" checked={f.include_registration_fee} onChange={(e) => setF({ ...f, include_registration_fee: e.target.checked })} />Inclure</label></Field>
+        <Field label="Frais d’inscription"><label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5 accent-brand" checked={f.include_registration_fee} onChange={(e) => setF({ ...f, include_registration_fee: e.target.checked })} />Inclure</label></Field>
         <Field label="Paiement immédiat (DT)" hint="Laisser vide si non payé"><Input type="number" step="0.001" min="0" value={f.initial_payment} onChange={(e) => setF({ ...f, initial_payment: e.target.value })} /></Field>
         <Field label="Mode de paiement"><MethodSelect value={f.method} onChange={(v) => setF({ ...f, method: v })} /></Field>
         <Field label="Remarques" className="sm:col-span-2"><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></Field>
@@ -66,7 +66,7 @@ export function NewSubscriptionModal({ open, onClose, clientId, renewFrom }: { o
         <Card className="mt-4 grid gap-2 bg-zinc-50 text-sm dark:bg-white/5 sm:grid-cols-3">
           <div>Prix : <b>{money(quote.data.base_price)}</b></div><div>Inscription : <b>{money(quote.data.registration_fee)}</b></div><div>Réduction : <b>-{money(quote.data.discount)}</b></div>
           <div>Du <b>{fmtDate(quote.data.start_date)}</b> au <b>{fmtDate(quote.data.end_date)}</b></div>
-          <div className="text-lg sm:col-span-2">Total : <b className="text-lime-600 dark:text-brand">{money(quote.data.final_price)}</b>{f.initial_payment ? <> · Reste : <b>{money(quote.data.final_price - toMillimes(f.initial_payment))}</b></> : null}</div>
+          <div className="text-lg sm:col-span-2">Total : <b className="text-brand">{money(quote.data.final_price)}</b>{f.initial_payment ? <> · Reste : <b>{money(quote.data.final_price - toMillimes(f.initial_payment))}</b></> : null}</div>
         </Card>
       )}
       {quote.error && <p className="mt-3 text-sm text-red-500">{(quote.error as Error).message}</p>}

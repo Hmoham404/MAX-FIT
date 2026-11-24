@@ -42,7 +42,7 @@ function RelationSelect({ f, value, onChange }: { f: FieldDef; value: any; onCha
           const on = arr.includes(r.id);
           return (
             <button type="button" key={r.id} onClick={() => onChange(on ? arr.filter((x) => x !== r.id) : [...arr, r.id])}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${on ? 'bg-brand text-ink' : 'bg-zinc-100 dark:bg-white/10'}`}>{f.relation!.label(r)}</button>
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${on ? 'bg-brand text-brand-fg' : 'bg-zinc-100 dark:bg-white/10'}`}>{f.relation!.label(r)}</button>
           );
         })}
       </div>
@@ -67,10 +67,10 @@ export function FormFields({ fields, value, onChange }: { fields: FieldDef[]; va
         switch (f.type) {
           case 'textarea': input = <Textarea value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} required={f.required} placeholder={f.placeholder} />; break;
           case 'select': input = <Select value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} required={f.required}><option value="">—</option>{f.options!.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>; break;
-          case 'bool': input = <label className="flex h-10 items-center gap-2"><input type="checkbox" className="h-5 w-5 accent-lime-400" checked={!!v} onChange={(e) => set(f.name, e.target.checked)} /> <span className="text-sm">Oui</span></label>; break;
+          case 'bool': input = <label className="flex h-10 items-center gap-2"><input type="checkbox" className="h-5 w-5 accent-brand" checked={!!v} onChange={(e) => set(f.name, e.target.checked)} /> <span className="text-sm">Oui</span></label>; break;
           case 'relation': case 'multirelation': input = <RelationSelect f={f} value={v} onChange={(x) => set(f.name, x)} />; break;
           case 'money': input = <div className="relative"><Input type="number" step="0.001" min="0" value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} required={f.required} className="pe-12" /><span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 rtl:left-3 rtl:right-auto">DT</span></div>; break;
-          case 'color': input = <div className="flex gap-2"><input type="color" value={v || '#BEF264'} onChange={(e) => set(f.name, e.target.value)} className="h-10 w-14 rounded-lg" /><Input value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} /></div>; break;
+          case 'color': input = <div className="flex gap-2"><input type="color" value={v || '#D3010C'} onChange={(e) => set(f.name, e.target.value)} className="h-10 w-14 rounded-lg" /><Input value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} /></div>; break;
           case 'image': input = <div className="flex gap-2"><Input value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} placeholder="https://…" />{v && <img src={v} alt="" className="h-10 w-10 rounded-lg object-cover" />}</div>; break;
           default: input = <Input type={f.type === 'percent' ? 'number' : f.type || 'text'} value={v ?? ''} onChange={(e) => set(f.name, e.target.value)} required={f.required} placeholder={f.placeholder} step={f.type === 'percent' ? '0.01' : undefined} />;
         }
@@ -197,7 +197,7 @@ export function Resource(p: ResourceProps) {
         onRowClick={p.onRowClick}
         toolbar={<>
           {p.filters?.map((f) => <FilterSelect key={f.name} f={f} value={filters[f.name] ?? ''} onChange={(v) => setFilters({ ...filters, [f.name]: v })} />)}
-          {p.archive && <label className="flex items-center gap-2 text-sm text-zinc-500"><input type="checkbox" checked={archived} onChange={(e) => setArchived(e.target.checked)} className="accent-lime-400" />Archivés</label>}
+          {p.archive && <label className="flex items-center gap-2 text-sm text-zinc-500"><input type="checkbox" checked={archived} onChange={(e) => setArchived(e.target.checked)} className="accent-brand" />Archivés</label>}
           {p.toolbar}
         </>}
         actions={(row) => (

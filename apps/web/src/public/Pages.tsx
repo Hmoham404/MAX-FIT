@@ -25,7 +25,7 @@ function SectionTitle({ kicker, title, action, light }: { kicker: string; title:
   return (
     <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
       <Reveal>
-        <div className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-lime-600 dark:text-brand"><span className="h-px w-8 bg-current" />{kicker}</div>
+        <div className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-brand"><span className="h-px w-8 bg-current" />{kicker}</div>
         <h2 className={cx('max-w-3xl font-display text-5xl uppercase leading-[0.95] tracking-wide sm:text-6xl', light && 'text-white')}>{title}</h2>
       </Reveal>
       {action}
@@ -79,10 +79,14 @@ export function HomePage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] backdrop-blur">
             <span className="h-2 w-2 animate-pulse rounded-full bg-brand" /> {t('hero.kicker')}
           </motion.div>
-          <h1 className="font-display text-[17vw] uppercase leading-[0.82] tracking-wide sm:text-[11rem] lg:text-[13rem]" dir="ltr">
-            <motion.span initial={{ opacity: 0, x: -60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="block">{(site?.site?.name || 'MAX FIT').split(' ')[0]}</motion.span>
-            <motion.span initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="block text-brand">{(site?.site?.name || 'MAX FIT').split(' ').slice(1).join(' ') || 'FIT'}</motion.span>
+          <motion.img initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} src={import.meta.env.BASE_URL + 'brand/mark-night.png'} alt="" className="mb-4 h-20 w-auto sm:h-28" />
+          <h1 className="select-none text-[18vw] font-black uppercase italic leading-[0.9] tracking-tight sm:text-[9rem] lg:text-[11rem]" dir="ltr">
+            <motion.span initial={{ opacity: 0, x: -60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="inline-block bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text pe-4 text-transparent">{(site?.site?.name || 'MAX FIT').split(' ')[0]}</motion.span>
+            <motion.span initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="inline-block pe-4 text-brand drop-shadow-[0_0_40px_rgb(var(--brand)/0.45)]">{(site?.site?.name || 'MAX FIT').split(' ').slice(1).join(' ') || 'FIT'}</motion.span>
           </h1>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-2 flex items-center gap-4 text-base font-semibold uppercase tracking-[0.5em] text-zinc-300 sm:text-2xl" dir="ltr">
+            <span className="h-1 w-10 bg-brand sm:w-16" />Fitness Club<span className="h-1 w-10 bg-brand sm:w-16" />
+          </motion.div>
           <div className="mt-6 h-12 overflow-hidden sm:h-14">
             <AnimatePresence mode="wait">
               <motion.p key={i + list[i]} initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -50, opacity: 0 }} transition={{ duration: 0.45 }} className="text-2xl font-bold sm:text-4xl">
@@ -91,7 +95,7 @@ export function HomePage() {
             </AnimatePresence>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8 flex flex-wrap gap-3">
-            <Link to="/pricing" className="group inline-flex items-center gap-2 rounded-full bg-brand px-7 py-4 text-sm font-extrabold uppercase tracking-wider text-ink transition hover:shadow-[0_0_40px_-5px_rgb(var(--brand))]">
+            <Link to="/pricing" className="group inline-flex items-center gap-2 rounded-full bg-brand px-7 py-4 text-sm font-extrabold uppercase tracking-wider text-brand-fg transition hover:shadow-[0_0_40px_-5px_rgb(var(--brand))]">
               {t('hero.cta1')} <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1 rtl:rotate-180" />
             </Link>
             <Link to="/planning" className="inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm font-extrabold uppercase tracking-wider backdrop-blur transition hover:bg-white hover:text-ink">
@@ -102,7 +106,7 @@ export function HomePage() {
       </section>
 
       {/* MARQUEE */}
-      <div className="overflow-hidden border-y border-ink bg-brand py-4 text-ink" dir="ltr">
+      <div className="overflow-hidden border-y border-ink bg-brand py-4 text-brand-fg" dir="ltr">
         <div className="flex w-max animate-marquee gap-10 whitespace-nowrap font-display text-3xl uppercase tracking-wider">
           {[...acts, ...acts, ...acts, ...acts].map((a, k) => (<span key={k} className="flex items-center gap-10">{tr(a, 'name')}<Zap className="h-6 w-6" /></span>))}
         </div>
@@ -127,7 +131,7 @@ export function HomePage() {
           {[Dumbbell, Award, Users, Clock].map((Icon, k) => (
             <Reveal key={k} delay={k * 0.08}>
               <div className="group h-full rounded-3xl border border-zinc-200 bg-zinc-50 p-7 transition hover:-translate-y-1 hover:border-brand hover:shadow-2xl dark:border-white/10 dark:bg-anthracite">
-                <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-ink text-brand transition group-hover:rotate-6 group-hover:bg-brand group-hover:text-ink dark:bg-white/5"><Icon className="h-7 w-7" /></div>
+                <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-ink text-brand transition group-hover:rotate-6 group-hover:bg-brand group-hover:text-brand-fg dark:bg-white/5"><Icon className="h-7 w-7" /></div>
                 <h3 className="mb-2 text-xl font-extrabold">{t(`adv.${k + 1}.t`)}</h3>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">{t(`adv.${k + 1}.d`)}</p>
               </div>
@@ -154,14 +158,14 @@ export function HomePage() {
             <Img src={site?.gallery?.[1] ? mediaUrl(site.gallery[1]) : undefined} alt="" className="aspect-[3/4] w-full rounded-3xl object-cover" />
             <Img src={site?.gallery?.[2] ? mediaUrl(site.gallery[2]) : undefined} alt="" className="mt-12 aspect-[3/4] w-full rounded-3xl object-cover" />
           </div>
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 rounded-2xl bg-brand px-6 py-4 font-display text-3xl uppercase text-ink shadow-2xl">1000 m²</div>
+          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 rounded-2xl bg-brand px-6 py-4 font-display text-3xl uppercase text-brand-fg shadow-2xl">1000 m²</div>
         </Reveal>
         <div>
           <SectionTitle kicker={t('home.equipment')} title={t('home.equipmentTitle')} />
           <Reveal><p className="text-lg text-zinc-600 dark:text-zinc-400">{t('home.equipmentText')}</p></Reveal>
           <div className="mt-8 grid grid-cols-2 gap-3">
             {(site?.rooms ?? []).map((r: any, k: number) => (
-              <Reveal key={r.id} delay={k * 0.05}><div className="flex items-center gap-3 rounded-2xl border border-zinc-200 p-4 font-semibold dark:border-white/10"><Sparkles className="h-5 w-5 shrink-0 text-lime-600 dark:text-brand" />{r.name}</div></Reveal>
+              <Reveal key={r.id} delay={k * 0.05}><div className="flex items-center gap-3 rounded-2xl border border-zinc-200 p-4 font-semibold dark:border-white/10"><Sparkles className="h-5 w-5 shrink-0 text-brand" />{r.name}</div></Reveal>
             ))}
           </div>
         </div>
@@ -203,7 +207,7 @@ export function HomePage() {
             </div>
           </div>
           <Reveal className="self-end">
-            <div className="rounded-3xl bg-brand p-8 text-ink">
+            <div className="rounded-3xl bg-brand p-8 text-brand-fg">
               <Clock className="mb-4 h-10 w-10" />
               <h3 className="mb-6 font-display text-4xl uppercase">{t('home.hours')}</h3>
               <ul className="space-y-3">
@@ -223,7 +227,7 @@ export function HomePage() {
             <p className="mt-4 text-lg text-zinc-300">{t('home.ctaText')}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               {site?.contact?.whatsapp && <a href={waLink(site.contact.whatsapp, 'Bonjour MAX FIT, je souhaite m’inscrire.')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-7 py-4 font-extrabold uppercase tracking-wider text-white transition hover:scale-105"><MessageCircle className="h-5 w-5" />WhatsApp</a>}
-              <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-4 font-extrabold uppercase tracking-wider text-ink transition hover:scale-105">{t('nav.contact')} <ArrowRight className="h-4 w-4 rtl:rotate-180" /></Link>
+              <Link to="/contact" className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-4 font-extrabold uppercase tracking-wider text-brand-fg transition hover:scale-105">{t('nav.contact')} <ArrowRight className="h-4 w-4 rtl:rotate-180" /></Link>
             </div>
           </div>
         </Reveal>
@@ -240,11 +244,11 @@ function ActivityCard({ a, delay = 0, tall }: { a: any; delay?: number; tall?: b
         <Img src={a.image_url} alt={tr(a, 'name')} className="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-110 group-hover:opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-          <div className="mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-ink" style={{ background: a.color || '#BEF264' }}>{a.category}</div>
+          <div className="mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white" style={{ background: a.color || '#D3010C' }}>{a.category}</div>
           <h3 className="font-display text-4xl uppercase leading-none">{tr(a, 'name')}</h3>
           <p className="mt-2 line-clamp-2 max-h-0 text-sm text-zinc-300 opacity-0 transition-all duration-500 group-hover:max-h-20 group-hover:opacity-100">{tr(a, 'description')}</p>
         </div>
-        <div className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition group-hover:rotate-45 group-hover:bg-brand group-hover:text-ink rtl:left-4 rtl:right-auto"><ArrowUpRight className="h-5 w-5" /></div>
+        <div className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition group-hover:rotate-45 group-hover:bg-brand group-hover:text-brand-fg rtl:left-4 rtl:right-auto"><ArrowUpRight className="h-5 w-5" /></div>
       </Link>
     </Reveal>
   );
@@ -258,7 +262,7 @@ function PlanCard({ p, promos, delay = 0, dark }: { p: any; promos?: any[]; dela
   return (
     <Reveal delay={delay}>
       <div className={cx('relative flex h-full flex-col overflow-hidden rounded-3xl border p-8 transition hover:-translate-y-1',
-        featured ? 'border-brand bg-brand text-ink shadow-[0_30px_80px_-30px_rgb(var(--brand))]' : dark ? 'border-white/10 bg-white/5 text-white' : 'border-zinc-200 bg-white dark:border-white/10 dark:bg-anthracite')}>
+        featured ? 'border-brand bg-brand text-brand-fg shadow-[0_30px_80px_-30px_rgb(var(--brand))]' : dark ? 'border-white/10 bg-white/5 text-white' : 'border-zinc-200 bg-white dark:border-white/10 dark:bg-anthracite')}>
         {featured && <div className="absolute right-6 top-6 rounded-full bg-ink px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-brand rtl:left-6 rtl:right-auto">{t('price.popular')}</div>}
         {promo && <div className="mb-3 inline-flex w-fit items-center gap-1 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white"><Tag className="h-3 w-3" />{promo.title}</div>}
         <div className="text-sm font-bold uppercase tracking-widest opacity-70">{durLabel(p, t)}</div>
@@ -270,10 +274,10 @@ function PlanCard({ p, promos, delay = 0, dark }: { p: any; promos?: any[]; dela
         </div>
         {p.registration_fee > 0 && <div className="mt-1 text-xs opacity-70">+ {t('price.fee')} : {money(p.registration_fee)}</div>}
         <ul className="my-6 flex-1 space-y-2 text-sm">
-          {(p.benefits || '').split('•').filter(Boolean).map((b: string, k: number) => (<li key={k} className="flex gap-2"><Zap className={cx('h-4 w-4 shrink-0', featured ? 'text-ink' : 'text-brand')} />{b.trim()}</li>))}
+          {(p.benefits || '').split('•').filter(Boolean).map((b: string, k: number) => (<li key={k} className="flex gap-2"><Zap className={cx('h-4 w-4 shrink-0', featured ? 'text-brand-fg' : 'text-brand')} />{b.trim()}</li>))}
         </ul>
         {p.conditions && <p className="mb-4 text-xs opacity-60">{p.conditions}</p>}
-        <Link to="/contact" className={cx('rounded-full py-3.5 text-center text-sm font-extrabold uppercase tracking-wider transition', featured ? 'bg-ink text-brand hover:bg-black' : 'bg-brand text-ink hover:brightness-95')}>{t('price.contact')}</Link>
+        <Link to="/contact" className={cx('rounded-full py-3.5 text-center text-sm font-extrabold uppercase tracking-wider transition', featured ? 'bg-ink text-brand hover:bg-black' : 'bg-brand text-brand-fg hover:brightness-95')}>{t('price.contact')}</Link>
       </div>
     </Reveal>
   );
@@ -295,7 +299,7 @@ function CoachCard({ c, delay = 0 }: { c: any; delay?: number }) {
         <div className="space-y-3 p-6">
           <div className="flex flex-wrap gap-2 text-xs">
             {c.experience_years > 0 && <span className="rounded-full bg-zinc-100 px-3 py-1 font-semibold dark:bg-white/10">{c.experience_years} {t('coach.years')}</span>}
-            {c.certifications && <span className="rounded-full bg-brand/20 px-3 py-1 font-semibold text-lime-800 dark:text-brand">{c.certifications}</span>}
+            {c.certifications && <span className="rounded-full bg-brand/20 px-3 py-1 font-semibold text-brand">{c.certifications}</span>}
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">{tr(c, 'bio')}</p>
         </div>
@@ -319,7 +323,7 @@ function UpcomingSessions() {
               <div className="text-xs font-bold uppercase text-zinc-500">{new Date(s.session_date + 'T00:00').toLocaleDateString(locale, { weekday: 'short' })}</div>
               <div className="font-display text-3xl" dir="ltr">{s.start_time}</div>
             </div>
-            <div className="h-12 w-1 rounded-full" style={{ background: s.activity_color || '#BEF264' }} />
+            <div className="h-12 w-1 rounded-full" style={{ background: s.activity_color || '#D3010C' }} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-lg font-extrabold">{tr(s, 'activity_name')}</div>
               <div className="truncate text-sm text-zinc-500">{s.coach_name} · {s.room_name} · {s.age_category}</div>
@@ -391,7 +395,7 @@ export function ActivitiesPage() {
       <PageHero title={t('act.title')} subtitle={t('act.subtitle')} image={site?.activities?.[3]?.image_url} />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-8 flex flex-wrap gap-2">
-          {['', ...cats].map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-5 py-2 text-sm font-bold uppercase tracking-wide transition', cat === c ? 'border-brand bg-brand text-ink' : 'border-zinc-300 hover:border-brand dark:border-white/15')}>{c || t('act.all')}</button>))}
+          {['', ...cats].map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-5 py-2 text-sm font-bold uppercase tracking-wide transition', cat === c ? 'border-brand bg-brand text-brand-fg' : 'border-zinc-300 hover:border-brand dark:border-white/15')}>{c || t('act.all')}</button>))}
         </div>
         <motion.div layout className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((a: any, k: number) => <ActivityCard key={a.id} a={a} delay={(k % 3) * 0.06} />)}
@@ -422,9 +426,9 @@ export function PlanningPage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <button onClick={() => setWeek(addDays(week, -7))} className="grid h-11 w-11 place-items-center rounded-full border border-zinc-300 hover:bg-brand hover:text-ink dark:border-white/15" aria-label={t('plan.prev')}><ChevronLeft className="rtl:rotate-180" /></button>
+            <button onClick={() => setWeek(addDays(week, -7))} className="grid h-11 w-11 place-items-center rounded-full border border-zinc-300 hover:bg-brand hover:text-brand-fg dark:border-white/15" aria-label={t('plan.prev')}><ChevronLeft className="rtl:rotate-180" /></button>
             <button onClick={() => setWeek(startOfWeek(todayISO()))} className="rounded-full border border-zinc-300 px-4 py-2.5 text-sm font-bold dark:border-white/15">{t('plan.today')}</button>
-            <button onClick={() => setWeek(addDays(week, 7))} className="grid h-11 w-11 place-items-center rounded-full border border-zinc-300 hover:bg-brand hover:text-ink dark:border-white/15" aria-label={t('plan.next')}><ChevronRight className="rtl:rotate-180" /></button>
+            <button onClick={() => setWeek(addDays(week, 7))} className="grid h-11 w-11 place-items-center rounded-full border border-zinc-300 hover:bg-brand hover:text-brand-fg dark:border-white/15" aria-label={t('plan.next')}><ChevronRight className="rtl:rotate-180" /></button>
             <span className="ms-2 font-display text-2xl">{new Date(week + 'T00:00').toLocaleDateString(locale, { day: 'numeric', month: 'short' })} — {new Date(addDays(week, 6) + 'T00:00').toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -442,7 +446,7 @@ export function PlanningPage() {
               const isToday = d === todayISO();
               return (
                 <div key={d} className={cx('rounded-2xl border p-2', isToday ? 'border-brand' : 'border-zinc-200 dark:border-white/10')}>
-                  <div className={cx('mb-2 rounded-xl px-3 py-2 text-center', isToday ? 'bg-brand text-ink' : 'bg-zinc-100 dark:bg-white/5')}>
+                  <div className={cx('mb-2 rounded-xl px-3 py-2 text-center', isToday ? 'bg-brand text-brand-fg' : 'bg-zinc-100 dark:bg-white/5')}>
                     <div className="text-xs font-bold uppercase tracking-wider">{new Date(d + 'T00:00').toLocaleDateString(locale, { weekday: 'long' })}</div>
                     <div className="font-display text-2xl">{d.slice(8)}</div>
                   </div>
@@ -450,7 +454,7 @@ export function PlanningPage() {
                   <div className="space-y-2">
                     {list.length === 0 && !ex && <div className="py-6 text-center text-xs text-zinc-400">—</div>}
                     {list.map((s) => (
-                      <motion.div layout key={s.id} className={cx('rounded-xl border-s-4 bg-zinc-50 p-2.5 text-sm dark:bg-anthracite', s.status === 'cancelled' && 'opacity-50')} style={{ borderColor: s.activity_color || '#BEF264' }}>
+                      <motion.div layout key={s.id} className={cx('rounded-xl border-s-4 bg-zinc-50 p-2.5 text-sm dark:bg-anthracite', s.status === 'cancelled' && 'opacity-50')} style={{ borderColor: s.activity_color || '#D3010C' }}>
                         <div className="font-bold tabular-nums" dir="ltr">{s.start_time}–{s.end_time}</div>
                         <div className={cx('font-extrabold leading-tight', s.status === 'cancelled' && 'line-through')}>{tr(s, 'activity_name')}</div>
                         <div className="text-xs text-zinc-500">{s.coach_name}</div>
@@ -491,7 +495,7 @@ export function PricingPage() {
           </div>
         )}
         <div className="mb-10 flex flex-wrap justify-center gap-2">
-          {cats.map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-6 py-3 font-display text-xl uppercase tracking-wider transition', cat === c ? 'border-brand bg-brand text-ink' : 'border-zinc-300 hover:border-brand dark:border-white/15')}>{t('cat.' + c)}</button>))}
+          {cats.map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-6 py-3 font-display text-xl uppercase tracking-wider transition', cat === c ? 'border-brand bg-brand text-brand-fg' : 'border-zinc-300 hover:border-brand dark:border-white/15')}>{t('cat.' + c)}</button>))}
         </div>
         <AnimatePresence mode="wait">
           <motion.div key={cat} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -531,7 +535,7 @@ export function GalleryPage() {
       <PageHero title={t('gal.title')} subtitle={t('gal.subtitle')} image={all[1] ? mediaUrl(all[1]) : undefined} />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-8 flex flex-wrap gap-2">
-          {['', ...cats].map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-5 py-2 text-sm font-bold uppercase transition', cat === c ? 'border-brand bg-brand text-ink' : 'border-zinc-300 dark:border-white/15')}>{c || t('gal.all')}</button>))}
+          {['', ...cats].map((c) => (<button key={c} onClick={() => setCat(c)} className={cx('rounded-full border px-5 py-2 text-sm font-bold uppercase transition', cat === c ? 'border-brand bg-brand text-brand-fg' : 'border-zinc-300 dark:border-white/15')}>{c || t('gal.all')}</button>))}
         </div>
         <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
           {list.map((g, k) => (
@@ -578,8 +582,8 @@ export function ContactPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {items.map(([Icon, label, value, href], k) => (
             <Reveal key={label} delay={k * 0.05}>
-              <a href={href ?? undefined} target={href?.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="group flex h-full flex-col gap-4 rounded-3xl border border-zinc-200 p-6 transition hover:border-brand hover:bg-brand hover:text-ink dark:border-white/10">
-                <Icon className="h-8 w-8 text-lime-600 transition group-hover:text-ink dark:text-brand" />
+              <a href={href ?? undefined} target={href?.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="group flex h-full flex-col gap-4 rounded-3xl border border-zinc-200 p-6 transition hover:border-brand hover:bg-brand hover:text-brand-fg dark:border-white/10">
+                <Icon className="h-8 w-8 text-brand transition group-hover:text-brand-fg dark:text-brand" />
                 <div><div className="text-xs font-bold uppercase tracking-widest opacity-60">{label}</div><div className="mt-1 break-words text-lg font-bold" dir={label === t('contact.phone') || label === 'WhatsApp' ? 'ltr' : undefined}>{value}</div></div>
               </a>
             </Reveal>

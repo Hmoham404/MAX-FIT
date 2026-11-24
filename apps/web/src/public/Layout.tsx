@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Facebook, Instagram, Lock, Menu, MessageCircle, Moon, Sun, X, MapPin, Phone, Mail } from 'lucide-react';
+import { Lock, Menu, MessageCircle, Moon, Sun, X, MapPin, Phone, Mail } from 'lucide-react';
 import { api } from '@/lib/api';
 import { usePrefs, type Lang } from '@/lib/prefs';
-import { Logo } from '@/components/Logo';
+import { Logo, SocialIcon, SocialLinks } from '@/components/Logo';
 import { cx, waLink } from '@/lib/format';
 
 export function useSite() {
@@ -22,11 +22,17 @@ function hexToRgb(hex: string) {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   return m ? `${parseInt(m[1], 16)} ${parseInt(m[2], 16)} ${parseInt(m[3], 16)}` : null;
 }
+/** Applies the brand color and picks a readable text color (white or black) for content placed on it. */
+export function applyBrandColor(hex?: string) {
+  const rgb = hexToRgb(hex || '');
+  if (!rgb) return;
+  const [r, g, b] = rgb.split(' ').map(Number);
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  document.documentElement.style.setProperty('--brand', rgb);
+  document.documentElement.style.setProperty('--brand-fg', lum > 0.6 ? '11 13 16' : '255 255 255');
+}
 export function useBrandColor(site: any) {
-  useEffect(() => {
-    const rgb = hexToRgb(site?.site?.colors?.primary);
-    if (rgb) document.documentElement.style.setProperty('--brand', rgb);
-  }, [site?.site?.colors?.primary]);
+  useEffect(() => applyBrandColor(site?.site?.colors?.primary), [site?.site?.colors?.primary]);
 }
 
 export function LangSwitch({ className }: { className?: string }) {
@@ -34,7 +40,7 @@ export function LangSwitch({ className }: { className?: string }) {
   return (
     <div className={cx('flex items-center rounded-full border border-current/20 p-0.5 text-xs font-bold', className)}>
       {(['fr', 'en', 'ar'] as Lang[]).map((l) => (
-        <button key={l} onClick={() => setLang(l)} className={cx('rounded-full px-2.5 py-1 uppercase transition', lang === l ? 'bg-brand text-ink' : 'opacity-70 hover:opacity-100')} aria-label={l}>
+        <button key={l} onClick={() => setLang(l)} className={cx('rounded-full px-2.5 py-1 uppercase transition', lang === l ? 'bg-brand text-brand-fg' : 'opacity-70 hover:opacity-100')} aria-label={l}>
           {l === 'ar' ? 'ع' : l}
         </button>
       ))}
@@ -96,9 +102,10 @@ export default function PublicLayout() {
             ))}
           </nav>
           <div className="ms-auto flex items-center gap-2">
+            <SocialLinks contact={contact} size="sm" className="hidden lg:flex" />
             <LangSwitch className="hidden sm:flex" />
             <ThemeSwitch />
-            <Link to="/pricing" className="hidden rounded-full bg-brand px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-ink transition hover:scale-105 hover:shadow-[0_0_30px_-5px_rgb(var(--brand))] md:inline-flex">{t('nav.join')}</Link>
+            <Link to="/pricing" className="hidden rounded-full bg-brand px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-brand-fg transition hover:scale-105 hover:shadow-[0_0_30px_-5px_rgb(var(--brand))] md:inline-flex">{t('nav.join')}</Link>
             <button className="grid h-10 w-10 place-items-center rounded-full xl:hidden" onClick={() => setOpen(!open)} aria-label="menu">{open ? <X /> : <Menu />}</button>
           </div>
         </div>
@@ -108,7 +115,7 @@ export default function PublicLayout() {
               <div className="flex flex-col gap-1 px-4 py-4">
                 {links.map(([to, k], i) => (
                   <motion.div key={to} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.03 }}>
-                    <NavLink to={to} end={to === '/'} className={({ isActive }) => cx('block rounded-xl px-4 py-3 font-display text-2xl tracking-wide', isActive ? 'bg-brand text-ink' : 'hover:bg-zinc-100 dark:hover:bg-white/5')}>{t(k)}</NavLink>
+                    <NavLink to={to} end={to === '/'} className={({ isActive }) => cx('block rounded-xl px-4 py-3 font-display text-2xl tracking-wide', isActive ? 'bg-brand text-brand-fg' : 'hover:bg-zinc-100 dark:hover:bg-white/5')}>{t(k)}</NavLink>
                   </motion.div>
                 ))}
                 <LangSwitch className="mt-3 self-start sm:hidden" />
@@ -125,7 +132,7 @@ export default function PublicLayout() {
       {contact.whatsapp && (
         <a href={waLink(contact.whatsapp, 'Bonjour MAX FIT, je souhaite des informations.')} target="_blank" rel="noopener noreferrer"
           className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-xl shadow-black/30 transition hover:scale-110 rtl:left-5 rtl:right-auto" aria-label="WhatsApp">
-          <MessageCircle className="h-7 w-7" />
+          <SocialIcon kind="whatsapp" className="h-7 w-7" />
           <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/50" />
         </a>
       )}
@@ -134,13 +141,9 @@ export default function PublicLayout() {
         <div className="pointer-events-none absolute -bottom-10 left-0 right-0 select-none text-center font-display text-[22vw] leading-none text-zinc-900/[0.03] dark:text-white/[0.03]" dir="ltr">{site?.site?.name || 'MAX FIT'}</div>
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
           <div className="space-y-4 md:col-span-1">
-            <Logo site={site?.site} />
+            <Logo site={site?.site} size="lg" />
             <p className="text-sm text-zinc-500 dark:text-zinc-400">{tl(site?.footer?.text)}</p>
-            <div className="flex gap-2">
-              {contact.facebook && <a href={contact.facebook} target="_blank" rel="noopener noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-zinc-300 transition hover:border-brand hover:bg-brand hover:text-ink dark:border-white/15" aria-label="Facebook"><Facebook className="h-4 w-4" /></a>}
-              {contact.instagram && <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-zinc-300 transition hover:border-brand hover:bg-brand hover:text-ink dark:border-white/15" aria-label="Instagram"><Instagram className="h-4 w-4" /></a>}
-              {contact.whatsapp && <a href={waLink(contact.whatsapp, 'Bonjour')} target="_blank" rel="noopener noreferrer" className="grid h-10 w-10 place-items-center rounded-full border border-zinc-300 transition hover:border-brand hover:bg-brand hover:text-ink dark:border-white/15" aria-label="WhatsApp"><MessageCircle className="h-4 w-4" /></a>}
-            </div>
+            <SocialLinks contact={contact} />
           </div>
           <div>
             <h4 className="mb-4 font-display text-xl tracking-wide">{t('footer.links')}</h4>

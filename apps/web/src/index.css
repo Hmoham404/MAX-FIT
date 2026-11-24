@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --brand: 190 242 100; }
+:root { --brand: 211 1 12; --brand-fg: 255 255 255; }
 html { scroll-behavior: smooth; }
 body { @apply bg-white text-zinc-900 antialiased dark:bg-ink dark:text-zinc-100; font-feature-settings: "cv11", "ss01"; }
 [dir="rtl"] body { font-family: "Noto Sans Arabic", Inter, system-ui, sans-serif; }
 [dir="rtl"] .font-display { font-family: "Noto Sans Arabic", "Bebas Neue", sans-serif; font-weight: 700; letter-spacing: 0; }
-::selection { background: rgb(var(--brand)); color: #0B0D10; }
+::selection { background: rgb(var(--brand)); color: rgb(var(--brand-fg)); }
 .text-stroke { -webkit-text-stroke: 1.5px currentColor; color: transparent; }
 .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(127,127,127,.35); border-radius: 9999px; }

@@ -9,6 +9,7 @@ import { resetCompanyCache } from '@/lib/docs';
 import { useAuth } from '../auth';
 import { Resource, useOptions } from '../Resource';
 import { Logo } from '@/components/Logo';
+import { applyBrandColor } from '@/public/Layout';
 import { mediaUrl } from '@/lib/api';
 
 // ======================= WEBSITE CMS =======================
@@ -21,6 +22,9 @@ export function WebsitePage() {
   const { data, isLoading, refetch } = useQuery({ queryKey: ['cms'], queryFn: () => api('/settings/website') });
   const [d, setD] = useState<any>(null);
   useEffect(() => { if (data && !d) setD(Object.fromEntries(Object.entries(data).map(([k, v]: any) => [k, v.draft]))); }, [data]);
+  // live preview of the brand color while editing (published value is restored on navigation)
+  useEffect(() => { if (d?.site?.colors?.primary) applyBrandColor(d.site.colors.primary); }, [d?.site?.colors?.primary]);
+  useEffect(() => () => applyBrandColor(data?.site?.published?.colors?.primary), [data]);
   const dirty = data && Object.values(data).some((v: any) => v.dirty);
   const saveDraft = async () => {
     try { for (const k of ['site', 'contact', 'about', 'seo', 'footer']) await api(`/settings/website/${k}`, { method: 'PUT', body: d[k] }); toast('success', 'Brouillon enregistré'); refetch(); } catch (e: any) { toast('error', e.message); }
@@ -59,7 +63,7 @@ export function WebsitePage() {
               {L.map((l) => <Field key={l} label={`Slogans (${l.toUpperCase()}) — un par ligne, défilent dans le hero`}><Textarea value={(d.site.slogans?.[l] ?? []).join('\n')} onChange={(e) => set('site', ['slogans', l], e.target.value.split('\n'))} dir={l === 'ar' ? 'rtl' : 'ltr'} /></Field>)}
             </Card>
             <Card className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">{(['primary', 'dark', 'anthracite'] as const).map((c) => <Field key={c} label={c}><div className="flex gap-2"><input type="color" value={d.site.colors?.[c] ?? '#BEF264'} onChange={(e) => set('site', ['colors', c], e.target.value)} className="h-10 w-12 rounded" /><Input value={d.site.colors?.[c] ?? ''} onChange={(e) => set('site', ['colors', c], e.target.value)} /></div></Field>)}</div>
+              <div className="grid grid-cols-3 gap-3">{(['primary', 'dark', 'anthracite'] as const).map((c) => <Field key={c} label={c}><div className="flex gap-2"><input type="color" value={d.site.colors?.[c] ?? '#D3010C'} onChange={(e) => set('site', ['colors', c], e.target.value)} className="h-10 w-12 rounded" /><Input value={d.site.colors?.[c] ?? ''} onChange={(e) => set('site', ['colors', c], e.target.value)} /></div></Field>)}</div>
               {(['logoDark', 'logoLight'] as const).map((k) => (
                 <Field key={k} label={k === 'logoDark' ? 'Logo mode nuit (fond sombre)' : 'Logo mode jour (fond clair)'} hint="Vide = logo MAX FIT par défaut (change automatiquement avec le mode)">
                   <div className="flex gap-2"><Input value={d.site[k] ?? ''} onChange={(e) => set('site', [k], e.target.value)} placeholder="https://… ou importer" /><UploadBtn kind="logo" onDone={(u) => set('site', [k], u)} /></div>
@@ -118,7 +122,7 @@ function GalleryAdmin({ upload }: { upload: (f: File, kind: string, cb: (u: stri
   const { can } = useAuth();
   return (
     <div className="space-y-3">
-      {can('website:write') && <Card className="flex flex-wrap items-center gap-3"><label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-bold text-ink"><Upload className="h-4 w-4" />Importer des photos<input type="file" multiple accept="image/*" className="hidden" onChange={async (e) => { for (const f of Array.from(e.target.files ?? [])) await upload(f, 'gallery', () => {}); qc.invalidateQueries({ queryKey: ['/media'] }); }} /></label><span className="text-xs text-zinc-500">Ou ajoutez une image par URL avec « Ajouter » (ex. photos publiées sur votre page Facebook / Instagram).</span></Card>}
+      {can('website:write') && <Card className="flex flex-wrap items-center gap-3"><label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-bold text-brand-fg"><Upload className="h-4 w-4" />Importer des photos<input type="file" multiple accept="image/*" className="hidden" onChange={async (e) => { for (const f of Array.from(e.target.files ?? [])) await upload(f, 'gallery', () => {}); qc.invalidateQueries({ queryKey: ['/media'] }); }} /></label><span className="text-xs text-zinc-500">Ou ajoutez une image par URL avec « Ajouter » (ex. photos publiées sur votre page Facebook / Instagram).</span></Card>}
       <Resource title="Galerie" endpoint="/media" module="website" deletable query={{ kind: 'gallery' }} defaults={{ kind: 'gallery', is_public: true }}
         columns={[{ key: 'img', label: '', render: (r) => <img src={mediaUrl(r)} className="h-14 w-20 rounded-lg object-cover" alt="" />, exportValue: () => '' }, { key: 'title', label: 'Titre' }, { key: 'category', label: 'Catégorie' }, { key: 'sort_order', label: 'Ordre' }, { key: 'is_public', label: 'Public', render: (r) => r.is_public ? <Badge tone="green">Oui</Badge> : <Badge>Non</Badge> }]}
         fields={[{ name: 'title', label: 'Titre' }, { name: 'category', label: 'Catégorie', placeholder: 'Équipements / Espaces / Infrastructures' }, { name: 'url', label: 'URL de l’image', type: 'image', span: 3, hint: 'Laisser vide pour une image importée' }, { name: 'sort_order', label: 'Ordre', type: 'number' }, { name: 'is_public', label: 'Publique', type: 'bool' }]} />
@@ -179,7 +183,7 @@ export function UsersPage() {
             <Field label="Nom affiché" required><Input value={form.display_name} onChange={(e) => setForm({ ...form, display_name: e.target.value })} /></Field>
             <Field label="Rôle"><Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}><option value="super_admin">Super Admin</option><option value="admin">Administrateur</option><option value="receptionist">Réceptionniste</option><option value="coach">Coach</option></Select></Field>
             <Field label="Employé lié" hint="Nécessaire pour le pointage / planning personnel"><Select value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })}><option value="">—</option>{emps.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}</Select></Field>
-            {form.id && <Field label="Actif"><label className="flex h-10 items-center gap-2"><input type="checkbox" className="h-5 w-5 accent-lime-400" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />Oui</label></Field>}
+            {form.id && <Field label="Actif"><label className="flex h-10 items-center gap-2"><input type="checkbox" className="h-5 w-5 accent-brand" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />Oui</label></Field>}
           </div>
           <details className="rounded-xl border border-zinc-200 p-3 dark:border-white/10"><summary className="cursor-pointer text-sm font-semibold">Permissions personnalisées (en plus / en moins du rôle)</summary>
             <div className="mt-3 grid max-h-72 gap-1 overflow-auto text-xs sm:grid-cols-3">{perms.map((p) => {
@@ -190,7 +194,7 @@ export function UsersPage() {
         </div>}
       </Modal>
       <Modal open={!!roleEdit} onClose={() => setRoleEdit(null)} title={`Droits du rôle ${roleEdit?.role}`} size="xl" footer={<Button onClick={async () => { await api(`/users/roles/${roleEdit!.role}/permissions`, { body: { permissions: [...roleEdit!.perms] } }); toast('success', 'Droits mis à jour'); setRoleEdit(null); meta.refetch(); }}>Enregistrer</Button>}>
-        {roleEdit && <table className="w-full text-sm"><thead><tr className="text-xs uppercase text-zinc-500"><th className="text-start">Module</th><th>Lire</th><th>Écrire</th><th>Supprimer</th></tr></thead><tbody>{modules.map((m) => <tr key={m} className="border-b border-zinc-100 dark:border-white/5"><td className="py-1.5 font-mono text-xs">{m}</td>{['read', 'write', 'delete'].map((a) => { const c = `${m}:${a}`; return <td key={a} className="text-center"><input type="checkbox" className="h-4 w-4 accent-lime-400" checked={roleEdit.perms.has(c)} onChange={(e) => { const s = new Set(roleEdit.perms); e.target.checked ? s.add(c) : s.delete(c); setRoleEdit({ ...roleEdit, perms: s }); }} /></td>; })}</tr>)}</tbody></table>}
+        {roleEdit && <table className="w-full text-sm"><thead><tr className="text-xs uppercase text-zinc-500"><th className="text-start">Module</th><th>Lire</th><th>Écrire</th><th>Supprimer</th></tr></thead><tbody>{modules.map((m) => <tr key={m} className="border-b border-zinc-100 dark:border-white/5"><td className="py-1.5 font-mono text-xs">{m}</td>{['read', 'write', 'delete'].map((a) => { const c = `${m}:${a}`; return <td key={a} className="text-center"><input type="checkbox" className="h-4 w-4 accent-brand" checked={roleEdit.perms.has(c)} onChange={(e) => { const s = new Set(roleEdit.perms); e.target.checked ? s.add(c) : s.delete(c); setRoleEdit({ ...roleEdit, perms: s }); }} /></td>; })}</tr>)}</tbody></table>}
       </Modal>
       <Modal open={!!code} onClose={() => setCode(null)} title="Code d’accès généré" size="sm" footer={<Button onClick={() => setCode(null)}>J’ai noté le code</Button>}>
         <p className="text-sm">Code de <b>{code?.name}</b> :</p>

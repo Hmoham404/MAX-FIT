@@ -6,7 +6,7 @@ import { cx } from '@/lib/format';
 // ---------------- Button ----------------
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 const variants: Record<Variant, string> = {
-  primary: 'bg-brand text-ink hover:brightness-95 shadow-[0_0_0_0_rgba(190,242,100,0.5)] hover:shadow-[0_0_24px_-4px_rgb(var(--brand)/0.7)]',
+  primary: 'bg-brand text-brand-fg hover:brightness-95 shadow-[0_0_0_0_rgba(190,242,100,0.5)] hover:shadow-[0_0_24px_-4px_rgb(var(--brand)/0.7)]',
   secondary: 'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-ink dark:hover:bg-zinc-200',
   ghost: 'hover:bg-zinc-100 dark:hover:bg-white/10',
   danger: 'bg-red-600 text-white hover:bg-red-700',
@@ -70,7 +70,7 @@ const badgeTones = {
   amber: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
   blue: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300',
   zinc: 'bg-zinc-100 text-zinc-700 dark:bg-white/10 dark:text-zinc-300',
-  brand: 'bg-brand/20 text-lime-800 dark:text-brand',
+  brand: 'bg-brand/20 text-brand',
   violet: 'bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-300',
 };
 export type Tone = keyof typeof badgeTones;
@@ -205,7 +205,7 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
 }
 
 export function Stat({ label, value, icon, tone = 'zinc', sub }: { label: string; value: ReactNode; icon?: ReactNode; tone?: 'zinc' | 'brand' | 'red' | 'amber' | 'green' | 'blue'; sub?: ReactNode }) {
-  const t = { zinc: 'text-zinc-500 bg-zinc-100 dark:bg-white/5', brand: 'text-lime-700 dark:text-brand bg-brand/15', red: 'text-red-600 bg-red-500/10', amber: 'text-amber-600 bg-amber-500/10', green: 'text-emerald-600 bg-emerald-500/10', blue: 'text-sky-600 bg-sky-500/10' }[tone];
+  const t = { zinc: 'text-zinc-500 bg-zinc-100 dark:bg-white/5', brand: 'text-brand bg-brand/15', red: 'text-red-600 bg-red-500/10', amber: 'text-amber-600 bg-amber-500/10', green: 'text-emerald-600 bg-emerald-500/10', blue: 'text-sky-600 bg-sky-500/10' }[tone];
   return (
     <Card className="flex items-start gap-3 p-4">
       {icon && <div className={cx('grid h-10 w-10 shrink-0 place-items-center rounded-xl', t)}>{icon}</div>}

@@ -6,6 +6,7 @@ import { api } from './api';
 // ---------------- Company info cache ----------------
 let companyCache: Record<string, string> | null = null;
 export async function company() {
+  await loadLogo();
   if (!companyCache) companyCache = await api('/settings/company').catch(() => ({}));
   return companyCache!;
 }
@@ -28,25 +29,34 @@ async function ensureArabic(doc: jsPDF, text: string) {
   return true;
 }
 
-const LIME: [number, number, number] = [190, 242, 100];
+/** Brand color (red MAX FIT by default, follows the CMS primary color). */
+function brandRGB(): [number, number, number] {
+  const v = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim().split(/s+/).map(Number);
+  return v.length === 3 && v.every((x) => !isNaN(x)) ? (v as [number, number, number]) : [211, 1, 12];
+}
+const LIME = brandRGB();
+let logoData: string | null = null;
+async function loadLogo() {
+  if (logoData) return;
+  try {
+    const b = await fetch(import.meta.env.BASE_URL + 'brand/logo-night.png').then((r) => r.blob());
+    logoData = await new Promise<string>((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result as string); fr.readAsDataURL(b); });
+  } catch { /* fallback to drawn mark */ }
+}
 const INK: [number, number, number] = [11, 13, 16];
 
 function header(doc: jsPDF, c: Record<string, string>, title: string, number: string, font: string) {
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...INK);
   doc.rect(0, 0, w, 30, 'F');
-  doc.setFillColor(...LIME);
-  doc.roundedRect(12, 7, 16, 16, 3, 3, 'F');
-  doc.setTextColor(...INK);
-  doc.setFont(font, 'bold');
-  doc.setFontSize(11);
-  doc.text('MF', 20, 17.5, { align: 'center' });
+  if (logoData) doc.addImage(logoData, 'PNG', 10, 3.5, 34, 23);
+  else { doc.setFillColor(...LIME); doc.roundedRect(12, 7, 16, 16, 3, 3, 'F'); }
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(16);
-  doc.text(c.company_name || 'MAX FIT', 32, 14);
+  doc.text(c.company_name || 'MAX FIT', 48, 14);
   doc.setFont(font, 'normal');
   doc.setFontSize(8);
-  doc.text([c.legal_name || '', `${c.address || ''}${c.phone ? '  •  ' + c.phone : ''}`, c.tax_id ? `MF : ${c.tax_id}` : ''].filter(Boolean), 32, 19);
+  doc.text([c.legal_name || '', `${c.address || ''}${c.phone ? '  •  ' + c.phone : ''}`, c.tax_id ? `MF : ${c.tax_id}` : ''].filter(Boolean), 48, 19);
   doc.setFont(font, 'bold');
   doc.setFontSize(14);
   doc.setTextColor(...LIME);
@@ -72,6 +82,7 @@ function footer(doc: jsPDF, c: Record<string, string>, font: string) {
 }
 function signature(doc: jsPDF, y: number, c: Record<string, string>, font: string, left = 'Signature', right = 'Cachet') {
   const w = doc.internal.pageSize.getWidth();
+  doc.setTextColor(0, 0, 0);
   doc.setFont(font, 'normal');
   doc.setFontSize(9);
   doc.setDrawColor(180);
@@ -114,6 +125,7 @@ export async function receiptPDF(id: number, mode: 'download' | 'print' = 'downl
   doc.roundedRect(12, y, doc.internal.pageSize.getWidth() - 24, 14, 2, 2, 'F');
   doc.setFont(font, 'bold');
   doc.setFontSize(13);
+  doc.setTextColor(255, 255, 255);
   doc.text(`MONTANT REÇU : ${money(r.amount)}`, doc.internal.pageSize.getWidth() / 2, y + 9, { align: 'center' });
   signature(doc, y + 22, c, font);
   footer(doc, c, font);
@@ -138,7 +150,7 @@ export async function commercialPDF(kind: 'quotation' | 'invoice', id: number, m
     head: [['Désignation', 'Qté', 'P.U. HT', 'Remise', 'Total HT']],
     body: d.items.map((i: any) => [i.designation, i.quantity, money(i.unit_price), i.discount_bp ? `${i.discount_bp / 100}%` : '—', money(i.total)]),
     styles: { font, fontSize: 9 },
-    headStyles: { fillColor: INK, textColor: LIME },
+    headStyles: { fillColor: INK, textColor: [255, 255, 255] },
     columnStyles: { 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'center' }, 4: { halign: 'right' } },
   });
   let y = (doc as any).lastAutoTable.finalY + 6;
@@ -187,12 +199,12 @@ export async function payslipPDF(period: any, records: any[], mode: 'download' |
     });
     const earnings = r.items.filter((i: any) => i.kind === 'earning');
     const deductions = r.items.filter((i: any) => i.kind === 'deduction');
-    autoTable(doc, { head: [['Rémunérations', 'Base', 'Montant']], body: earnings.map((i: any) => [i.label, i.base || '', money(i.amount)]), styles: { font, fontSize: 9 }, headStyles: { fillColor: INK, textColor: LIME }, columnStyles: { 2: { halign: 'right' } } });
+    autoTable(doc, { head: [['Rémunérations', 'Base', 'Montant']], body: earnings.map((i: any) => [i.label, i.base || '', money(i.amount)]), styles: { font, fontSize: 9 }, headStyles: { fillColor: INK, textColor: [255, 255, 255] }, columnStyles: { 2: { halign: 'right' } } });
     autoTable(doc, { head: [['Retenues', 'Base', 'Montant']], body: deductions.length ? deductions.map((i: any) => [i.label, i.base || '', money(i.amount)]) : [['—', '', '']], styles: { font, fontSize: 9 }, headStyles: { fillColor: [120, 30, 30] }, columnStyles: { 2: { halign: 'right' } } });
     autoTable(doc, {
       body: [['Salaire brut', money(r.gross)], ['Cotisations sociales', money(r.social_contrib)], ['IRPP / CSS', money(r.irpp)], ['Autres retenues', money(r.other_deductions)], ['Salaire net', money(r.net)], ['Avances', money(r.advances)], ['NET À PAYER', money(r.net_to_pay)]],
       theme: 'plain', margin: { left: w - 100 }, styles: { font, fontSize: 10 }, columnStyles: { 1: { halign: 'right', fontStyle: 'bold' } },
-      didParseCell: (h) => { if (h.row.index === 6) { h.cell.styles.fillColor = LIME; h.cell.styles.fontStyle = 'bold'; } },
+      didParseCell: (h) => { if (h.row.index === 6) { h.cell.styles.fillColor = LIME; h.cell.styles.textColor = [255, 255, 255]; h.cell.styles.fontStyle = 'bold'; } },
     });
     const y = (doc as any).lastAutoTable.finalY + 6;
     doc.setFontSize(9);
@@ -240,7 +252,7 @@ export async function tablePDF(title: string, columns: { key: string; label: str
     head: [columns.map((c) => c.label)],
     body: rows.map((r) => columns.map((col) => (col.money ? money(r[col.key]) : r[col.key] ?? ''))),
     styles: { font, fontSize: 8 },
-    headStyles: { fillColor: INK, textColor: LIME },
+    headStyles: { fillColor: INK, textColor: [255, 255, 255] },
     alternateRowStyles: { fillColor: [247, 247, 248] },
   });
   footer(doc, c, font);

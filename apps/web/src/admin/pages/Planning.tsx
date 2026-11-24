@@ -61,7 +61,7 @@ function SessionForm({ open, onClose, session, date }: { open: boolean; onClose:
         <Field label="Coach remplaçant"><Select value={f.replacement_coach_id} onChange={(e) => setF({ ...f, replacement_coach_id: e.target.value })}><option value="">Aucun</option>{coaches.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}</Select></Field>
         {!session ? <Field label="Récurrence" hint="Répéter chaque semaine"><Select value={f.repeat_weeks} onChange={(e) => setF({ ...f, repeat_weeks: e.target.value })}><option value={0}>Aucune</option>{[3, 7, 11, 25, 51].map((w) => <option key={w} value={w}>{w + 1} semaines</option>)}</Select></Field>
           : session.recurrence_group && <Field label="Appliquer à"><Select value={f.scope} onChange={(e) => setF({ ...f, scope: e.target.value })}><option value="one">Cette séance</option><option value="series">Toute la série à venir</option></Select></Field>}
-        <Field label="Publiée sur le site"><label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5 accent-lime-400" checked={!!f.is_published} onChange={(e) => setF({ ...f, is_published: e.target.checked })} />Oui</label></Field>
+        <Field label="Publiée sur le site"><label className="flex h-10 items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5 accent-brand" checked={!!f.is_published} onChange={(e) => setF({ ...f, is_published: e.target.checked })} />Oui</label></Field>
         <Field label="Notes" className="sm:col-span-3"><Textarea value={f.notes ?? ''} onChange={(e) => setF({ ...f, notes: e.target.value })} /></Field>
       </div>
       {conf.length > 0 ? (
@@ -117,7 +117,7 @@ export default function PlanningPage() {
   };
   const Chip = ({ s }: { s: any }) => (
     <div draggable={can('schedules:write')} onDragStart={(e) => e.dataTransfer.setData('id', String(s.id))} onClick={() => can('schedules:write') && setEdit({ open: true, session: s })}
-      className={cx('group cursor-pointer rounded-lg border-s-4 bg-white p-1.5 text-xs shadow-sm transition hover:shadow-md dark:bg-[#20242c]', s.status === 'cancelled' && 'opacity-50 line-through')} style={{ borderColor: s.activity_color || '#BEF264' }}>
+      className={cx('group cursor-pointer rounded-lg border-s-4 bg-white p-1.5 text-xs shadow-sm transition hover:shadow-md dark:bg-[#20242c]', s.status === 'cancelled' && 'opacity-50 line-through')} style={{ borderColor: s.activity_color || '#D3010C' }}>
       <div className="font-bold tabular-nums">{s.start_time}–{s.end_time}</div>
       <div className="truncate font-semibold">{s.activity_name}</div>
       <div className="truncate text-zinc-500">{s.coach_name}{s.replacement_coach_id ? ' (rempl.)' : ''}</div>

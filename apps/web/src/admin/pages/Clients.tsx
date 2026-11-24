@@ -64,7 +64,7 @@ function ClientForm({ open, onClose, client }: { open: boolean; onClose: () => v
           <Field label="Catégorie" hint="Automatique selon l’âge si vide"><Select value={f.category_id ?? ''} onChange={(e) => setF({ ...f, category_id: e.target.value })}><option value="">Auto</option>{cats.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}</Select></Field>
           <Field label="Statut"><Select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })}><option value="active">Actif</option><option value="inactive">Inactif</option><option value="suspended">Suspendu</option></Select></Field>
           <Field label="Activités pratiquées" className="sm:col-span-2 lg:col-span-3">
-            <div className="flex flex-wrap gap-1.5">{acts.map((a) => { const on = f.activities.includes(a.value); return <button type="button" key={a.value} onClick={() => setF({ ...f, activities: on ? f.activities.filter((x: number) => x !== a.value) : [...f.activities, a.value] })} className={`rounded-full px-3 py-1 text-xs font-semibold ${on ? 'bg-brand text-ink' : 'bg-zinc-100 dark:bg-white/10'}`}>{a.label}</button>; })}</div>
+            <div className="flex flex-wrap gap-1.5">{acts.map((a) => { const on = f.activities.includes(a.value); return <button type="button" key={a.value} onClick={() => setF({ ...f, activities: on ? f.activities.filter((x: number) => x !== a.value) : [...f.activities, a.value] })} className={`rounded-full px-3 py-1 text-xs font-semibold ${on ? 'bg-brand text-brand-fg' : 'bg-zinc-100 dark:bg-white/10'}`}>{a.label}</button>; })}</div>
           </Field>
           <Field label="Remarques administratives" className="sm:col-span-2 lg:col-span-3"><Textarea value={f.notes ?? ''} onChange={(e) => setF({ ...f, notes: e.target.value })} /></Field>
         </div>
@@ -243,7 +243,7 @@ export default function ClientsPage() {
           <Select value={validity} onChange={(e) => setValidity(e.target.value)} className="h-9 w-auto"><option value="">Abonnement</option><option value="valid">Valide</option><option value="expired">Expiré / aucun</option><option value="unpaid">Avec impayé</option></Select>
           <Select value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 w-auto"><option value="">Statut</option><option value="active">Actif</option><option value="inactive">Inactif</option><option value="suspended">Suspendu</option></Select>
           <Select value={activity} onChange={(e) => setActivity(e.target.value)} className="h-9 w-auto"><option value="">Activité</option>{acts.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}</Select>
-          <label className="flex items-center gap-2 text-sm text-zinc-500"><input type="checkbox" checked={archived} onChange={(e) => setArchived(e.target.checked)} className="accent-lime-400" />Archivés</label>
+          <label className="flex items-center gap-2 text-sm text-zinc-500"><input type="checkbox" checked={archived} onChange={(e) => setArchived(e.target.checked)} className="accent-brand" />Archivés</label>
         </>}
         columns={[
           { key: 'matricule', label: 'Matricule', sortKey: 't.matricule', className: 'font-mono text-xs' },

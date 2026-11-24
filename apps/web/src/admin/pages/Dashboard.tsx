@@ -8,7 +8,7 @@ import { Button, Card, ErrorBox, Input, Select, Skeleton, Stat } from '@/compone
 import { exportExcel, tablePDF } from '@/lib/docs';
 import { usePrefs } from '@/lib/prefs';
 
-const COLORS = ['#BEF264', '#38BDF8', '#F97316', '#A855F7', '#EF4444', '#14B8A6', '#EAB308', '#EC4899', '#22C55E', '#64748B'];
+const COLORS = ['#D3010C', '#38BDF8', '#F97316', '#A855F7', '#EF4444', '#14B8A6', '#EAB308', '#EC4899', '#22C55E', '#64748B'];
 
 function rangeFor(p: string): [string, string] {
   const t = todayISO();
@@ -30,7 +30,7 @@ function ChartCard({ title, children, className }: { title: string; children: Re
     </Card>
   );
 }
-const tip = { contentStyle: { background: '#171A20', border: '1px solid rgba(255,255,255,.1)', borderRadius: 12, color: '#fff' }, labelStyle: { color: '#BEF264' } };
+const tip = { contentStyle: { background: '#171A20', border: '1px solid rgba(255,255,255,.1)', borderRadius: 12, color: '#fff' }, labelStyle: { color: '#D3010C' } };
 
 export default function Dashboard() {
   const { theme } = usePrefs();
@@ -97,9 +97,9 @@ export default function Dashboard() {
             {c.revenue_monthly && (
               <ChartCard title="Évolution du chiffre d’affaires">
                 <ResponsiveContainer><AreaChart data={c.revenue_monthly}>
-                  <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#BEF264" stopOpacity={0.5} /><stop offset="100%" stopColor="#BEF264" stopOpacity={0} /></linearGradient></defs>
+                  <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#D3010C" stopOpacity={0.5} /><stop offset="100%" stopColor="#D3010C" stopOpacity={0} /></linearGradient></defs>
                   <CartesianGrid stroke={grid} vertical={false} /><XAxis dataKey="month" stroke={axis} fontSize={11} /><YAxis stroke={axis} fontSize={11} tickFormatter={tnd} width={70} />
-                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Area type="monotone" dataKey="billed" name="Facturé" stroke="#BEF264" fill="url(#g1)" strokeWidth={2} />
+                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Area type="monotone" dataKey="billed" name="Facturé" stroke="#D3010C" fill="url(#g1)" strokeWidth={2} />
                 </AreaChart></ResponsiveContainer>
               </ChartCard>
             )}
@@ -107,7 +107,7 @@ export default function Dashboard() {
               <ChartCard title="Recettes vs dépenses">
                 <ResponsiveContainer><BarChart data={c.revenue_monthly}>
                   <CartesianGrid stroke={grid} vertical={false} /><XAxis dataKey="month" stroke={axis} fontSize={11} /><YAxis stroke={axis} fontSize={11} tickFormatter={tnd} width={70} />
-                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Legend /><Bar dataKey="collected" name="Recettes" fill="#BEF264" radius={[6, 6, 0, 0]} /><Bar dataKey="expenses" name="Dépenses" fill="#EF4444" radius={[6, 6, 0, 0]} />
+                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Legend /><Bar dataKey="collected" name="Recettes" fill="#D3010C" radius={[6, 6, 0, 0]} /><Bar dataKey="expenses" name="Dépenses" fill="#EF4444" radius={[6, 6, 0, 0]} />
                 </BarChart></ResponsiveContainer>
               </ChartCard>
             )}
@@ -125,7 +125,7 @@ export default function Dashboard() {
             <ChartCard title="Taux de renouvellement">
               <ResponsiveContainer><LineChart data={(c.renewal ?? []).map((r: any) => ({ ...r, rate: r.ended ? Math.round((r.renewed / r.ended) * 100) : 0 }))}>
                 <CartesianGrid stroke={grid} vertical={false} /><XAxis dataKey="month" stroke={axis} fontSize={11} /><YAxis stroke={axis} fontSize={11} unit="%" domain={[0, 100]} />
-                <Tooltip {...tip} formatter={(v: number) => `${v} %`} /><Line type="monotone" dataKey="rate" name="Renouvellement" stroke="#BEF264" strokeWidth={3} dot={{ r: 4 }} />
+                <Tooltip {...tip} formatter={(v: number) => `${v} %`} /><Line type="monotone" dataKey="rate" name="Renouvellement" stroke="#D3010C" strokeWidth={3} dot={{ r: 4 }} />
               </LineChart></ResponsiveContainer>
             </ChartCard>
             <ChartCard title="Évolution des inscriptions">
@@ -150,7 +150,7 @@ export default function Dashboard() {
               <ChartCard title="Évolution de la masse salariale">
                 <ResponsiveContainer><LineChart data={c.payroll_monthly}>
                   <CartesianGrid stroke={grid} vertical={false} /><XAxis dataKey="month" stroke={axis} fontSize={11} /><YAxis stroke={axis} fontSize={11} tickFormatter={tnd} width={70} />
-                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Legend /><Line dataKey="gross" name="Brut" stroke="#38BDF8" strokeWidth={2} /><Line dataKey="net" name="Net à payer" stroke="#BEF264" strokeWidth={2} />
+                  <Tooltip {...tip} formatter={(v: number) => money(v)} /><Legend /><Line dataKey="gross" name="Brut" stroke="#38BDF8" strokeWidth={2} /><Line dataKey="net" name="Net à payer" stroke="#D3010C" strokeWidth={2} />
                 </LineChart></ResponsiveContainer>
               </ChartCard>
             )}

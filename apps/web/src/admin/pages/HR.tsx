@@ -51,7 +51,7 @@ export function CoachesPage() {
       header={<p className="text-sm text-zinc-500">Pour ajouter un coach, créez un employé avec le poste « Coach » dans Personnel. Cochez « Visible sur le site » pour l’afficher publiquement (aucune donnée RH n’est publiée).</p>}
       filters={[{ name: 'public', label: 'Visibilité', options: [{ value: '1', label: 'Visibles sur le site' }, { value: '0', label: 'Masqués' }] }]}
       columns={[
-        { key: 'photo', label: '', render: (r) => r.photo_url ? <img src={r.photo_url} className="h-10 w-10 rounded-full object-cover" alt="" /> : <div className="grid h-10 w-10 place-items-center rounded-full bg-brand font-bold text-ink">{r.first_name?.[0]}</div>, exportValue: () => '' },
+        { key: 'photo', label: '', render: (r) => r.photo_url ? <img src={r.photo_url} className="h-10 w-10 rounded-full object-cover" alt="" /> : <div className="grid h-10 w-10 place-items-center rounded-full bg-brand font-bold text-brand-fg">{r.first_name?.[0]}</div>, exportValue: () => '' },
         { key: 'name', label: 'Coach', render: (r) => <div><b>{r.public_name || `${r.first_name} ${r.last_name}`}</b><div className="text-xs text-zinc-500">{r.matricule}</div></div>, exportValue: (r) => `${r.first_name} ${r.last_name}` },
         { key: 'specialties', label: 'Spécialités' }, { key: 'experience_years', label: 'Exp. (ans)' }, { key: 'sessions_done', label: 'Séances réalisées' },
         { key: 'worked_minutes', label: 'Heures validées', render: (r) => minutesToH(r.worked_minutes), exportValue: (r) => (r.worked_minutes / 60).toFixed(1) },
@@ -240,7 +240,7 @@ export function PayrollPage({ initialTab = 'run' }: { initialTab?: 'run' | 'slip
               {d?.records?.length > 0 && <Button variant="outline" onClick={() => payslipPDF(d, d.records)}><FileDown className="h-4 w-4" />Tous les bulletins</Button>}
             </div>
           </Card>
-          {tab === 'run' && <div className="flex flex-wrap gap-1.5">{steps.map((s, i) => <span key={s} className={`rounded-full px-3 py-1 text-xs font-semibold ${i <= stepIdx ? 'bg-brand text-ink' : 'bg-zinc-100 text-zinc-500 dark:bg-white/5'}`}>{i + 1}. {s}</span>)}</div>}
+          {tab === 'run' && <div className="flex flex-wrap gap-1.5">{steps.map((s, i) => <span key={s} className={`rounded-full px-3 py-1 text-xs font-semibold ${i <= stepIdx ? 'bg-brand text-brand-fg' : 'bg-zinc-100 text-zinc-500 dark:bg-white/5'}`}>{i + 1}. {s}</span>)}</div>}
           {d?.records && (
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <Stat label="Salariés" value={d.records.length} /><Stat label="Masse brute" value={money(d.records.reduce((a: number, r: any) => a + r.gross, 0))} tone="blue" />

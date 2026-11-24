@@ -91,7 +91,7 @@ export default function AdminLayout() {
             {!collapsed && <div className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{t(g.k)}</div>}
             <div className="space-y-0.5">
               {items.map((i) => (
-                <NavLink key={i.to} to={i.to} title={t(i.k)} className={() => cx('group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition', isActive(i.to) ? 'bg-brand text-ink shadow-[0_8px_24px_-12px_rgb(var(--brand))]' : 'text-zinc-400 hover:bg-white/5 hover:text-white', collapsed && 'justify-center px-0')}>
+                <NavLink key={i.to} to={i.to} title={t(i.k)} className={() => cx('group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition', isActive(i.to) ? 'bg-brand text-brand-fg shadow-[0_8px_24px_-12px_rgb(var(--brand))]' : 'text-zinc-400 hover:bg-white/5 hover:text-white', collapsed && 'justify-center px-0')}>
                   <i.icon className="h-[18px] w-[18px] shrink-0" />
                   {!collapsed && <span className="truncate">{t(i.k)}</span>}
                   {!collapsed && i.to === '/admin/notifications' && notif?.unread > 0 && <span className="ms-auto rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{notif.unread}</span>}
