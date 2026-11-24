@@ -128,7 +128,7 @@ export default function PublicLayout() {
             <SocialLinks contact={contact} size="sm" className="hidden lg:flex" />
             <LangSwitch className="hidden sm:flex" />
             <ThemeSwitch />
-            <Link to="/pricing" className="hidden rounded-full bg-brand px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-brand-fg transition hover:scale-105 hover:shadow-[0_0_30px_-5px_rgb(var(--brand))] md:inline-flex">{t('nav.join')}</Link>
+            <Link to="/pricing" className="hidden whitespace-nowrap rounded-full bg-brand px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-brand-fg transition hover:scale-105 hover:shadow-[0_0_30px_-5px_rgb(var(--brand))] md:inline-flex">{t('nav.join')}</Link>
             <button className="grid h-10 w-10 place-items-center rounded-full xl:hidden" onClick={() => setOpen(!open)} aria-label="menu">{open ? <X /> : <Menu />}</button>
           </div>
         </div>
