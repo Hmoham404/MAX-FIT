@@ -8,3 +8,6 @@ dist/
 *.log
 .DS_Store
 backups/
+android-signing/
+*.keystore
+794413525_*.jpg

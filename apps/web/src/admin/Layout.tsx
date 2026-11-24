@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Baby, Banknote, Bell, BookOpen, Boxes, Briefcase, CalendarClock, CalendarDays, CalendarOff, ChevronsLeft, ChevronsRight, ClipboardList, Clock, CreditCard, Dumbbell,
-  FileBarChart, FileCheck2, FileSignature, FileText, Globe, LayoutDashboard, LogOut, Menu, Receipt, Settings, Shield, ShoppingCart, Tags, Truck, User, UserCog, Users, UserRound, Wallet, WifiOff, Wrench, X, ExternalLink, Activity,
+  FileBarChart, FileCheck2, FileSignature, FileText, Globe, LayoutDashboard, LogOut, Menu, Receipt, Settings, Shield, ShoppingCart, Tags, Truck, User, UserCog, Users, UserRound, Wallet, WifiOff, Smartphone, Wrench, X, ExternalLink, Activity,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { usePrefs } from '@/lib/prefs';
@@ -70,6 +70,7 @@ export default function AdminLayout() {
   const [online, setOnline] = useState(navigator.onLine);
   const loc = useLocation();
   useEffect(() => { setMobile(false); }, [loc.pathname, loc.search]);
+  useEffect(() => { document.title = 'MAX FIT — Administration'; }, [loc.pathname]);
   useEffect(() => {
     const on = () => setOnline(true), off = () => setOnline(false);
     window.addEventListener('online', on); window.addEventListener('offline', off);
@@ -142,6 +143,7 @@ export default function AdminLayout() {
             <div className="truncate text-sm font-bold">{me.display_name}</div>
             <div className="text-xs capitalize text-zinc-500">{me.role.replace('_', ' ')}</div>
           </div>
+          <a href={import.meta.env.BASE_URL + 'app'} target="_blank" rel="noopener noreferrer" className="hidden items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-xs font-bold text-brand-fg sm:flex"><Smartphone className="h-3.5 w-3.5" />Application mobile</a>
           <a href={import.meta.env.BASE_URL} target="_blank" rel="noopener noreferrer" className="hidden items-center gap-1 text-xs font-semibold text-zinc-500 hover:text-brand sm:flex"><ExternalLink className="h-3.5 w-3.5" />Site public</a>
           <LangSwitch className="hidden sm:flex" />
           <ThemeSwitch />

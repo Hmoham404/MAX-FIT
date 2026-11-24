@@ -6,6 +6,7 @@ import { AboutPage, ActivitiesPage, CoachesPage, ContactPage, GalleryPage, HomeP
 import { useAuth, AuthGate } from '@/admin/auth';
 
 // The whole back office is lazy-loaded: public visitors never download it.
+const AppPage = lazy(() => import('@/public/AppPage'));
 const AdminLayout = lazy(() => import('@/admin/Layout'));
 const Dashboard = lazy(() => import('@/admin/pages/Dashboard'));
 const Clients = lazy(() => import('@/admin/pages/Clients'));
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="gallery" element={<GalleryPage />} />
           <Route path="contact" element={<ContactPage />} />
         </Route>
+        <Route path="app" element={<AppPage />} />
         <Route path="admin" element={<AuthGate><Suspense fallback={<Loading />}><AdminLayout /></Suspense></AuthGate>}>
           <Route index element={<AdminHome />} />
           <Route path="me" element={<Guard perm="self:read"><Me /></Guard>} />

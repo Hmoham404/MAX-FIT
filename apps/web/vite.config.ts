@@ -18,8 +18,12 @@ export default defineConfig({
     registerType: 'autoUpdate',
     includeAssets: ['favicon.png', 'icons/*.png', 'brand/*.png'],
     manifest: {
-      name: 'MAX FIT — SMART GYM 360',
+      id: base + 'admin',
+        name: 'MAX FIT — Gestion',
       short_name: 'MAX FIT',
+        lang: 'fr',
+        orientation: 'any',
+        categories: ['business', 'fitness', 'productivity'],
       description: 'MAX FIT — salle de sport & back office SMART GYM 360 by GM LAC',
       theme_color: '#121212',
       background_color: '#121212',
@@ -35,6 +39,11 @@ export default defineConfig({
     workbox: {
       // Only the static app shell is cached. API responses (sensitive data) are NEVER cached.
       globPatterns: ['**/*.{js,css,html,svg,png,woff2,ttf}'],
+        globIgnores: ['download/**'],
+        navigateFallbackDenylist: [/^\/download\//, /^\/\.well-known\//],
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       navigateFallback: base + 'index.html',
       runtimeCaching: []

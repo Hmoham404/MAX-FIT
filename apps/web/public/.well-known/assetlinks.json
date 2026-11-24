@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "tn.maxfit.gestion",
+        "sha256_cert_fingerprints": ["38:7E:A9:2C:22:04:63:3A:F7:22:0C:27:32:58:BD:54:F8:89:98:7D:02:A9:6B:40:DF:A8:5B:80:0E:88:EA:B8"]
+      }
+    }]
